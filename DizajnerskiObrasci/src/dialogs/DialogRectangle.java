@@ -1,11 +1,15 @@
-package sorting;
+package dialogs;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import javax.swing.JButton;
+import javax.swing.JColorChooser;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import geometry.Rectangle;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -38,8 +42,14 @@ public class DialogRectangle extends JDialog {
 	private JButton okButton;
 	private JButton cancelButton;
 	private JLabel lblOptional;
+	private JButton btnInnerColor;
+	private JButton btnEdgeColor;
+	private Color innerColor;
+	private Color edgeColor;
 	
-	
+
+
+
 	/**
 	 * Launch the application.
 	 */
@@ -60,7 +70,7 @@ public class DialogRectangle extends JDialog {
 	 */
 	public DialogRectangle() {
 		setTitle("Rectangle");
-		setBounds(100, 100, 680, 508);
+		setBounds(100, 100, 802, 508);
 		getContentPane().setLayout(new BorderLayout());
 		this.setModal(true);
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -131,6 +141,20 @@ public class DialogRectangle extends JDialog {
 		
 		lblOptional = new JLabel("");
 		lblOptional.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		btnInnerColor = new JButton("Inner color");
+		btnInnerColor.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				innerColor=JColorChooser.showDialog(null, "Pick your color", Color.WHITE);
+			}
+		});
+		btnEdgeColor = new JButton("Edge color");
+		btnEdgeColor.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				edgeColor=JColorChooser.showDialog(null, "Pick your color", Color.BLACK);
+			}
+		});
 		GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
 		gl_contentPanel.setHorizontalGroup(
 			gl_contentPanel.createParallelGroup(Alignment.LEADING)
@@ -148,7 +172,12 @@ public class DialogRectangle extends JDialog {
 								.addComponent(txtWidth)
 								.addComponent(txtYCoordinate, GroupLayout.DEFAULT_SIZE, 225, Short.MAX_VALUE)
 								.addComponent(txtXCoordinate, GroupLayout.DEFAULT_SIZE, 225, Short.MAX_VALUE)
-								.addComponent(txtHeight, GroupLayout.DEFAULT_SIZE, 225, Short.MAX_VALUE)))
+								.addComponent(txtHeight, GroupLayout.DEFAULT_SIZE, 225, Short.MAX_VALUE))
+							.addPreferredGap(ComponentPlacement.RELATED, 129, Short.MAX_VALUE)
+							.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+								.addComponent(btnInnerColor)
+								.addComponent(btnEdgeColor))
+							.addGap(119))
 						.addGroup(gl_contentPanel.createSequentialGroup()
 							.addComponent(lblOptional)
 							.addContainerGap(738, Short.MAX_VALUE))))
@@ -156,24 +185,31 @@ public class DialogRectangle extends JDialog {
 		gl_contentPanel.setVerticalGroup(
 			gl_contentPanel.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_contentPanel.createSequentialGroup()
-					.addContainerGap()
-					.addComponent(lblOptional)
-					.addGap(27)
-					.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
-						.addComponent(lblXCoordinate)
-						.addComponent(txtXCoordinate, GroupLayout.PREFERRED_SIZE, 36, GroupLayout.PREFERRED_SIZE))
-					.addGap(18)
-					.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
-						.addComponent(txtYCoordinate, GroupLayout.PREFERRED_SIZE, 37, GroupLayout.PREFERRED_SIZE)
-						.addComponent(lblYCoordinate))
-					.addGap(18)
-					.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
-						.addComponent(txtHeight, GroupLayout.PREFERRED_SIZE, 39, GroupLayout.PREFERRED_SIZE)
-						.addComponent(lblHeight))
-					.addGap(18)
-					.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
-						.addComponent(txtWidth, GroupLayout.PREFERRED_SIZE, 35, GroupLayout.PREFERRED_SIZE)
-						.addComponent(lblWidth, GroupLayout.PREFERRED_SIZE, 47, GroupLayout.PREFERRED_SIZE))
+					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_contentPanel.createSequentialGroup()
+							.addContainerGap()
+							.addComponent(lblOptional)
+							.addGap(27)
+							.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
+								.addComponent(lblXCoordinate)
+								.addComponent(txtXCoordinate, GroupLayout.PREFERRED_SIZE, 36, GroupLayout.PREFERRED_SIZE))
+							.addGap(18)
+							.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
+								.addComponent(txtYCoordinate, GroupLayout.PREFERRED_SIZE, 37, GroupLayout.PREFERRED_SIZE)
+								.addComponent(lblYCoordinate))
+							.addGap(18)
+							.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
+								.addComponent(txtHeight, GroupLayout.PREFERRED_SIZE, 39, GroupLayout.PREFERRED_SIZE)
+								.addComponent(lblHeight))
+							.addGap(18)
+							.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
+								.addComponent(txtWidth, GroupLayout.PREFERRED_SIZE, 35, GroupLayout.PREFERRED_SIZE)
+								.addComponent(lblWidth, GroupLayout.PREFERRED_SIZE, 47, GroupLayout.PREFERRED_SIZE)))
+						.addGroup(gl_contentPanel.createSequentialGroup()
+							.addGap(95)
+							.addComponent(btnInnerColor)
+							.addGap(62)
+							.addComponent(btnEdgeColor)))
 					.addContainerGap(125, Short.MAX_VALUE))
 		);
 		contentPanel.setLayout(gl_contentPanel);
@@ -187,21 +223,21 @@ public class DialogRectangle extends JDialog {
 					public void actionPerformed(ActionEvent arg0) {
 						try
 						{
-							Rectangle rectangle=new Rectangle();
-							rectangle.setUpperLeftPoint(new Point(Integer.parseInt((getTxtXCoordinate())),Integer.parseInt(getTxtYCoordinate())));
-							rectangle.setWidth(Integer.parseInt(getTxtWidth()));
-							rectangle.setHeight(Integer.parseInt(getTxtHeight()));
-							int i=Integer.parseInt(getTxtXCoordinate());
-							int j=Integer.parseInt(getTxtYCoordinate());
+						Rectangle r=new Rectangle();
+						r.setHeight(Integer.parseInt(getTxtHeight()));
+						r.setWidth(Integer.parseInt(getTxtWidth()));
+						int i=Integer.parseInt(getTxtXCoordinate());
+						int j=Integer.parseInt(getTxtYCoordinate());
 						ok=true;
 						dispose();
 						}
-						catch(NumberFormatException e) {
-							JOptionPane.showMessageDialog(new JFrame(),"Incorrect data entry.Check that all fields are filled with numeric values!", "Error!", JOptionPane.ERROR_MESSAGE);
-						}
-						catch(Exception e)
+						catch(NumberFormatException ex)
 						{
-							JOptionPane.showMessageDialog(new JFrame(),"Height and width must be positive values!", "Error", JOptionPane.ERROR_MESSAGE);
+							JOptionPane.showMessageDialog(new JFrame(), "Incorrect data entry.Check that all fields are filled with numeric values!", "Error", JOptionPane.WARNING_MESSAGE);
+						}
+						catch(Exception ex)
+						{
+							JOptionPane.showMessageDialog(new JFrame(), "Height and width must be positive values!", "Error", JOptionPane.WARNING_MESSAGE);
 						}
 					}
 				});
@@ -213,8 +249,10 @@ public class DialogRectangle extends JDialog {
 				cancelButton.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent arg0) {
+						
 						ok=false;
 						dispose();
+	
 					}
 				});
 				cancelButton.setActionCommand("Cancel");
@@ -223,11 +261,11 @@ public class DialogRectangle extends JDialog {
 			gl_buttonPane.setHorizontalGroup(
 				gl_buttonPane.createParallelGroup(Alignment.LEADING)
 					.addGroup(gl_buttonPane.createSequentialGroup()
-						.addGap(476)
+						.addGap(610)
 						.addComponent(okButton, GroupLayout.PREFERRED_SIZE, 72, GroupLayout.PREFERRED_SIZE)
-						.addPreferredGap(ComponentPlacement.UNRELATED)
+						.addGap(3)
 						.addComponent(cancelButton, GroupLayout.DEFAULT_SIZE, 80, Short.MAX_VALUE)
-						.addGap(122))
+						.addContainerGap())
 			);
 			gl_buttonPane.setVerticalGroup(
 				gl_buttonPane.createParallelGroup(Alignment.LEADING)
@@ -243,7 +281,22 @@ public class DialogRectangle extends JDialog {
 			
 		}
 	}
-	
+	public Color getInnerColor() {
+		return innerColor;
+	}
+
+	public void setInnerColor(Color innerColor) {
+		this.innerColor = innerColor;
+	}
+
+	public Color getEdgeColor() {
+		return edgeColor;
+	}
+
+	public void setEdgeColor(Color edgeColor) {
+		this.edgeColor = edgeColor;
+	}
+
 	public void setTxtXCoordinateEnabled(boolean b)
 	{
 		this.txtXCoordinate.setEnabled(b);
@@ -263,58 +316,47 @@ public class DialogRectangle extends JDialog {
 	{
 		this.txtWidth.setEnabled(b);
 	}
-	public void setLblOptionalTxt(String text) {
+	public void setLblOpcionoTxt(String text) {
 		lblOptional.setText(text);
 	}
-	
+
 	public String getTxtXCoordinate() {
 		return txtXCoordinate.getText();
 	}
-
 
 	public void setTxtXCoordinate(String s) {
 		this.txtXCoordinate.setText(s);
 	}
 
-
 	public boolean isOk() {
 		return ok;
 	}
-
 
 	public void setOk(boolean ok) {
 		this.ok = ok;
 	}
 
-
 	public String getTxtYCoordinate() {
 		return txtYCoordinate.getText();
 	}
-
 
 	public void setTxtYCoordinate(String s) {
 		this.txtYCoordinate.setText(s);;
 	}
 
-
 	public String getTxtHeight() {
 		return txtHeight.getText();
 	}
-
 
 	public void setTxtHeight(String broj) {
 		this.txtHeight.setText(broj);
 	}
 
-
 	public String getTxtWidth() {
 		return txtWidth.getText();
 	}
 
-
 	public void setTxtWidth(String broj) {
 		this.txtWidth.setText(broj);;
 	}
-
-
 }

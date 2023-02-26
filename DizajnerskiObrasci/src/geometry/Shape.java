@@ -1,4 +1,4 @@
-package stack;
+package geometry;
 
 import java.awt.Graphics;
 

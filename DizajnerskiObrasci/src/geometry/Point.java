@@ -1,4 +1,4 @@
-package sorting;
+package geometry;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -7,6 +7,7 @@ public class Point extends Shape {
 
 	private int x;
 	private int y;
+	private Color col;
 	
 	public Point() {
 		
@@ -22,10 +23,15 @@ public class Point extends Shape {
 		setSelected(selected);
 	}
 
-	@Override
+	@Override//Override anotacija oznacava da izvrsena metoda overrajduje metodu klase koju prosiruje, odnosno superklase
 	public void draw(Graphics g) {
+		if(this.col!=null)
+			g.setColor(col);
+		else
+			g.setColor(Color.BLACK);
 		g.drawLine(this.x-2, this.y, this.x+2, this.y);
 		g.drawLine(this.x, this.y-2, this.x, this.y+2);
+		g.setColor(Color.BLACK);
 		
 		if (isSelected()) {
 			g.setColor(Color.BLUE);
@@ -34,24 +40,15 @@ public class Point extends Shape {
 		}
 	}
 
+	
+	public void moveBy(int byX, int byY) {
+	    this.x = this.x + byX;
+		this.y += byY;
+	}
+
 	@Override
 	public boolean contains(Point p) {
 		return this.distance(p.getX(), p.getY()) <=3;
-	}
-	
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof Point) {
-			Point p = (Point) obj;
-			if (this.x == p.getX() &&
-					this.y == p.getY()) {
-				return true;
-			} else {
-				return false;
-			}
-		} else {
-			return false;
-		}
 	}
 	
 	public double distance(int x2, int y2) {
@@ -77,6 +74,14 @@ public class Point extends Shape {
 		this.y = y;
 	}
 	
+	public Color getCol() {
+		return col;
+	}
+
+	public void setCol(Color col) {
+		this.col = col;
+	}
+
 	@Override
 	public String toString() {
 		return "(" + x + ", " + y + ")" ;

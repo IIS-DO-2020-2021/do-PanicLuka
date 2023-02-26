@@ -1,7 +1,11 @@
-package painting;
+package geometry;
 
 import java.awt.Color;
 import java.awt.Graphics;
+
+import mvc.DrawingFrame;
+import mvc.DrawingView;
+
 
 public class Donut extends Circle {
 private int innerRadius;
@@ -25,7 +29,7 @@ private Color colSmallerEdge;
 	@Override
 	public void draw(Graphics g) {
 		super.draw(g);
-		PnlDrawing pn=new PnlDrawing(new Drawing());
+		DrawingView pn=new DrawingView();
 		g.setColor(pn.getBackground());
 		g.fillOval(this.getCenter().getX() - this.innerRadius, this.getCenter().getY() - this.getInnerRadius(), this.getInnerRadius()*2, this.innerRadius*2);
 		if(colSmallerEdge!=null)

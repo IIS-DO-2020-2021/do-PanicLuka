@@ -1,4 +1,4 @@
-package sorting;
+package geometry;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -8,25 +8,10 @@ public class Rectangle extends Shape{
 	private Point upperLeftPoint;
 	private int width;
 	private int height;
-	private Color InnerColor;
-	private Color EdgeColor;
+	private Color innerColor;
+	private Color edgeColor;
 	
 	
-	public Color getInnerColor() {
-		return InnerColor;
-	}
-
-	public void setInnerColor(Color InnerColor) {
-		this.InnerColor = InnerColor;
-	}
-
-	public Color getEdgeColor() {
-		return EdgeColor;
-	}
-
-	public void setEdgeColor(Color EdgeColor) {
-		this.EdgeColor = EdgeColor;
-	}
 
 	public Rectangle() {
 
@@ -45,13 +30,13 @@ public class Rectangle extends Shape{
 
 	@Override
 	public void draw(Graphics g) {
-		if(InnerColor!=null)
+		if(innerColor!=null)
 		{
-		g.setColor(InnerColor);
+		g.setColor(innerColor);
 		g.fillRect(this.getUpperLeftPoint().getX(), this.getUpperLeftPoint().getY(), this.getWidth(), this.height);
 		}
-		if(EdgeColor!=null)
-		g.setColor(EdgeColor);
+		if(edgeColor!=null)
+		g.setColor(edgeColor);
 		g.drawRect(this.getUpperLeftPoint().getX(), this.getUpperLeftPoint().getY(), this.getWidth(), this.height);
 		g.setColor(Color.BLACK);
 		
@@ -106,6 +91,22 @@ public class Rectangle extends Shape{
 			throw new Exception();
 		
 	}
+	public Color getInnerColor() {
+		return innerColor;
+	}
+
+	public void setInnerColor(Color innerColor) {
+		this.innerColor = innerColor;
+	}
+
+	public Color getEdgeColor() {
+		return edgeColor;
+	}
+
+	public void setEdgeColor(Color edgeColor) {
+		this.edgeColor = edgeColor;
+	}
+
 	
 	@Override
 	public String toString() {
