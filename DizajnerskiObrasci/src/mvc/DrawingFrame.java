@@ -39,6 +39,7 @@ public class DrawingFrame extends JFrame {
 	private DrawingController controller;
 	
 	private JPanel contentPane;
+	JToggleButton tglbtnHexagon;
 	JToggleButton tglbtnPoint;
 	JToggleButton tglbtnLine;
 	JToggleButton tglbtnRectangle;
@@ -72,6 +73,18 @@ public class DrawingFrame extends JFrame {
 		JToolBar toolBar = new JToolBar();
 		
 		
+		tglbtnHexagon = new JToggleButton("Hexagon");
+		tglbtnHexagon.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				controller.setStartPoint(null);
+			}
+		});
+		tglbtnHexagon.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		
+		toolBar.add(tglbtnHexagon);
+		group.add(tglbtnHexagon);
+		
 		tglbtnPoint = new JToggleButton("Point");
 		tglbtnPoint.addMouseListener(new MouseAdapter() {
 			@Override
@@ -80,6 +93,7 @@ public class DrawingFrame extends JFrame {
 			}
 		});
 		tglbtnPoint.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		
 		toolBar.add(tglbtnPoint);
 		group.add(tglbtnPoint);
 		
@@ -216,6 +230,10 @@ public class DrawingFrame extends JFrame {
 
 	public void setController(DrawingController controller) {
 		this.controller = controller;
+	}
+	
+	public boolean getTglbtnHexagon() {
+		return tglbtnHexagon.isSelected();
 	}
 	public boolean getTglbtnPoint() {
 		return tglbtnPoint.isSelected();

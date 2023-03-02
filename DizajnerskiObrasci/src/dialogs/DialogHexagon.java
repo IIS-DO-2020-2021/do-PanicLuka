@@ -3,34 +3,35 @@ package dialogs;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
+import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-
-import geometry.Circle;
-
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-
-import java.awt.Font;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.ActionEvent;
-import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.border.EmptyBorder;
 
-public class DialogCircle extends JDialog {
+import adapter.HexagonAdapter;
+import geometry.Point;
 
+
+
+public class DialogHexagon extends JDialog{
 	private final JPanel contentPanel = new JPanel();
-	private JTextField txtdiametar;
+	private JTextField txtRadius;
 	private boolean ok;
 	private JTextField txtCoordY;
 	private JTextField txtCoordX;
@@ -43,7 +44,7 @@ public class DialogCircle extends JDialog {
 	 */
 	public static void main(String[] args) {
 		try {
-			DialogCircle dialog = new DialogCircle();
+			DialogHexagon dialog = new DialogHexagon();
 			dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 			dialog.setVisible(true);
 		} catch (Exception e) {
@@ -54,18 +55,18 @@ public class DialogCircle extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public DialogCircle() {
-		setTitle("Circle");
+	public DialogHexagon() {
+		setTitle("Hexagon");
 		setBounds(100, 100, 568, 391);
 		getContentPane().setLayout(new BorderLayout());
 		this.setModal(true);
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
-		JLabel lblDiametar = new JLabel("Diametar");
-		lblDiametar.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		txtdiametar = new JTextField();
-		txtdiametar.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		txtdiametar.setColumns(10);
+		JLabel lblRadius = new JLabel("Radius");
+		lblRadius.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		txtRadius = new JTextField();
+		txtRadius.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		txtRadius.setColumns(10);
 		
 		JLabel lblCoordinateX = new JLabel("Coordinate X");
 		lblCoordinateX.setFont(new Font("Tahoma", Font.PLAIN, 20));
@@ -132,10 +133,10 @@ public class DialogCircle extends JDialog {
 						.addGroup(gl_contentPanel.createSequentialGroup()
 							.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
 								.addComponent(lblCoordinateY, GroupLayout.PREFERRED_SIZE, 115, GroupLayout.PREFERRED_SIZE)
-								.addComponent(lblDiametar))
+								.addComponent(lblRadius))
 							.addPreferredGap(ComponentPlacement.UNRELATED)
 							.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-								.addComponent(txtdiametar, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+								.addComponent(txtRadius, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 								.addGroup(Alignment.TRAILING, gl_contentPanel.createSequentialGroup()
 									.addComponent(txtCoordY, GroupLayout.PREFERRED_SIZE, 176, GroupLayout.PREFERRED_SIZE)
 									.addPreferredGap(ComponentPlacement.RELATED, 22, Short.MAX_VALUE)
@@ -172,8 +173,8 @@ public class DialogCircle extends JDialog {
 								.addComponent(txtCoordY, GroupLayout.PREFERRED_SIZE, 31, GroupLayout.PREFERRED_SIZE))
 							.addGap(43)
 							.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
-								.addComponent(lblDiametar)
-								.addComponent(txtdiametar, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
+								.addComponent(lblRadius)
+								.addComponent(txtRadius, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
 						.addGroup(gl_contentPanel.createSequentialGroup()
 							.addGap(106)
 							.addComponent(btnColInnerr)
@@ -194,11 +195,19 @@ public class DialogCircle extends JDialog {
 					{
 						try
 						{
-						//Circle c= new Circle();
-						//c.setRadius(Integer.parseInt(getTextDiametar()));
+						//System.out.println("this is radius hexagon");
+						//HexagonAdapter h= new HexagonAdapter(new Point(Integer.parseInt(getTxtCoordX()), Integer.parseInt(getTxtCoordY()))
+								//,Integer.parseInt(getTextRadius()),
+								//false
+								//,getColEdge(),
+								//getColInner());
+						//h.setHexagonRadius(Integer.parseInt(getTextRadius()));
 						//int i=Integer.parseInt(getTxtCoordX());
 						//int j=Integer.parseInt(getTxtCoordY());
+						//System.out.println("this" + h.getHexagonRadius());
+
 						setOk(true);
+
 						dispose();
 						}
 						catch(NumberFormatException ex)
@@ -207,7 +216,9 @@ public class DialogCircle extends JDialog {
 						}
 						catch(Exception ex)
 						{
-							JOptionPane.showMessageDialog(new JFrame(), "Value of diametar must be positive number!", "Error", JOptionPane.WARNING_MESSAGE);	
+							JOptionPane.showMessageDialog(new JFrame(), "Value of diametar must be positive number!", "error", JOptionPane.WARNING_MESSAGE);
+							//System.out.println("this" + ex.getMessage());
+
 						}
 						
 					}
@@ -279,11 +290,12 @@ public class DialogCircle extends JDialog {
 		this.ok = ok;
 	}
 
-	public String getTextDiametar() {
-		return txtdiametar.getText();
+	public String getTextRadius() {
+		return txtRadius.getText();
 	}
 
-	public void setDiametar(String textField) {
-		this.txtdiametar.setText(textField);
+	public void setRadius(String textField) {
+		this.txtRadius.setText(textField);
 		}
-}
+
+	}

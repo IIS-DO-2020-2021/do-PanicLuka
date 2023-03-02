@@ -209,10 +209,10 @@ public class DialogDonut extends JDialog {
 					public void actionPerformed(ActionEvent e) {
 						try
 						{
-						int i=Integer.parseInt(getTxtCoordX());
-						int j=Integer.parseInt(getTxtCoordY());
-						Point p=new Point(i,j);
-						Donut d=new Donut(p,Integer.parseInt(getTxtEdge()),Integer.parseInt(getTxtInner()));
+						//int i=Integer.parseInt(getTxtCoordX());
+						//int j=Integer.parseInt(getTxtCoordY());
+						//Point p=new Point(i,j);
+						//Donut d=new Donut(p,Integer.parseInt(getTxtEdge()),Integer.parseInt(getTxtInner()));
 						setOk(true);
 						dispose();
 						}

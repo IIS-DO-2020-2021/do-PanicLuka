@@ -199,10 +199,10 @@ public class DialogLine extends JDialog {
 					public void actionPerformed(ActionEvent arg0) {
 						try
 						{
-						int i=Integer.parseInt(getTxtStartCoordX());
-						int j=Integer.parseInt(getTxtStartCoordY());
-						int k=Integer.parseInt(getTxtEndCoordX());
-						int l=Integer.parseInt(getTxtEndCoordY());
+						//int i=Integer.parseInt(getTxtStartCoordX());
+						//int j=Integer.parseInt(getTxtStartCoordY());
+						//int k=Integer.parseInt(getTxtEndCoordX());
+						//int l=Integer.parseInt(getTxtEndCoordY());
 						setOk(true);
 						dispose();
 						}

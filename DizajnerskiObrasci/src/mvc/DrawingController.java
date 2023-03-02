@@ -8,8 +8,10 @@ import java.util.Iterator;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
+import adapter.HexagonAdapter;
 import dialogs.DialogCircle;
 import dialogs.DialogDonut;
+import dialogs.DialogHexagon;
 import dialogs.DialogLine;
 import dialogs.DialogPoint;
 import dialogs.DialogRectangle;
@@ -91,6 +93,44 @@ public class DrawingController {
 			l.setCol(dl.getCol());
 			model.add(l);
 			startPoint=null;
+			}
+		}
+		else if(frame.getTglbtnHexagon())
+		{
+			Point p=new Point(e.getX(),e.getY());
+			DialogHexagon dija=new DialogHexagon();
+			dija.setTxtCoordX(Integer.toString(p.getX()));
+			dija.setTxtCoordY(Integer.toString(p.getY()));
+			//dija.setRadius(dija.getTextRadius());
+			dija.setTxtCoordXEdt(false);
+			dija.setTxtCoordYEdt(false);
+			//dija.setEnabled(false);
+			dija.setVisible(true);
+			if(dija.isOk()) {
+			try {
+			
+			int radius=Integer.parseInt(dija.getTextRadius());
+			
+			HexagonAdapter h= new HexagonAdapter(new Point(Integer.parseInt(dija.getTxtCoordX()), Integer.parseInt(dija.getTxtCoordY()))
+					,Integer.parseInt(dija.getTextRadius()),
+					false
+					,dija.getColEdge(),
+					dija.getColInner());
+			h.setHexagonRadius(radius);
+			System.out.println(radius);
+
+			h.setHexagonBorderColor(dija.getColEdge());
+			h.setHexagonInnerColor(dija.getColInner());
+			model.add(h);
+			}
+			catch(NumberFormatException ex)
+			{
+				JOptionPane.showMessageDialog(new JFrame(), "Incorrect data entry.Check that all fields are filled with numeric values!", "Error", JOptionPane.WARNING_MESSAGE);
+			}
+			catch(Exception ex)
+			{
+				JOptionPane.showMessageDialog(new JFrame(), "Radius must be positive value!", ex.getMessage(), JOptionPane.WARNING_MESSAGE);
+			}
 			}
 		}
 		else if(frame.getTglbtnRectangle())
@@ -196,7 +236,7 @@ public class DrawingController {
 			ArrayList<Shape> list=getShape();
 			int index=list.indexOf(pomShape);
 			//model.add(pomShape);
-			System.out.println(pomShape);
+			//System.out.println(pomShape);
 			
 
 
@@ -251,7 +291,8 @@ public class DrawingController {
 				((Line)pomShape).setStartPoint(new Point((Integer.parseInt(ml.getTxtStartCoordX())),(Integer.parseInt(ml.getTxtStartCoordY()))));
 				((Line)pomShape).setEndPoint(new Point((Integer.parseInt(ml.getTxtEndCoordX())),(Integer.parseInt(ml.getTxtEndCoordY()))));
 				((Line)pomShape).setCol(ml.getCol());
-				list.set(index,pomShape);
+				model.add(pomShape);
+				//list.set(index,pomShape);
 				setShape(list);
 				setTestShape(pomShape);
 				frame.repaint();
@@ -281,7 +322,8 @@ public class DrawingController {
 				((Rectangle)pomShape).setWidth(Integer.parseInt(dp.getTxtWidth()));
 				((Rectangle)pomShape).setEdgeColor(dp.getEdgeColor());
 				((Rectangle)pomShape).setInnerColor(dp.getInnerColor());
-				list.set(index,pomShape);
+				//list.set(index,pomShape);
+				model.add(pomShape);
 				setShape(list);
 				setTestShape(pomShape);
 				frame.repaint();
@@ -294,6 +336,45 @@ public class DrawingController {
 			catch(Exception e)
 			{
 				JOptionPane.showMessageDialog(new JFrame(), "Height and width must be positive values!", "Error", JOptionPane.WARNING_MESSAGE);
+			}
+			
+		}
+		else if(getTestShape() instanceof HexagonAdapter)
+		{
+			DialogHexagon dh=new DialogHexagon();
+			dh.setTxtCoordX(Integer.toString(((HexagonAdapter)pomShape).getHexagonCenter().getX()));
+			dh.setTxtCoordY(Integer.toString(((HexagonAdapter)pomShape).getHexagonCenter().getY()));
+			dh.setRadius(Integer.toString(((HexagonAdapter)pomShape).getHexagonRadius()));
+			dh.setColInner(((HexagonAdapter)pomShape).getHexagonInnerColor());
+			dh.setColEdge(((HexagonAdapter)pomShape).getHexagonBorderColor());
+			dh.setVisible(true);
+			//System.out.println("this is length" + dh.getTextRadius());
+			try
+			{
+			if(dh.isOk())
+			{
+				((HexagonAdapter)pomShape).setHexagonCenter(new Point(Integer.parseInt(dh.getTxtCoordX()), Integer.parseInt(dh.getTxtCoordY())));
+				((HexagonAdapter)pomShape).setHexagonRadius(Integer.parseInt(dh.getTextRadius()));
+				((HexagonAdapter)pomShape).setHexagonBorderColor(dh.getColEdge());
+				((HexagonAdapter)pomShape).setHexagonInnerColor(dh.getColInner());
+				//list.set(index,pomShape);
+				model.add(pomShape);
+				setShape(list);
+				setTestShape(pomShape);
+				
+				frame.repaint();
+				
+			}
+			}
+			catch(NumberFormatException ex)
+			{
+				JOptionPane.showMessageDialog(new JFrame(), "Incorrect data entry.Check that all fields are filled with numeric values!", "Error", JOptionPane.WARNING_MESSAGE);
+			}
+			catch(Exception e)
+			{
+				System.out.println("this" + e.getMessage());
+
+				JOptionPane.showMessageDialog(new JFrame(), "Value of radius must be positive!", "Error", JOptionPane.WARNING_MESSAGE);
 			}
 			
 		}
@@ -316,7 +397,8 @@ public class DrawingController {
 				((Donut)pomShape).setColEdge(dk.getColEdge());
 				((Donut)pomShape).setColSmallerEdge(dk.getColEdge());
 				((Donut)pomShape).setColInner(dk.getColInner());
-				list.set(index,pomShape);
+				//list.set(index,pomShape);
+				model.add(pomShape);
 				setShape(list);
 				setTestShape(pomShape);
 				frame.repaint();
@@ -348,7 +430,8 @@ public class DrawingController {
 				((Circle)pomShape).setRadius(Integer.parseInt(dk.getTextDiametar()));
 				((Circle)pomShape).setColEdge(dk.getColEdge());
 				((Circle)pomShape).setColInner(dk.getColInner());
-				list.set(index,pomShape);
+				//list.set(index,pomShape);
+				model.add(pomShape);
 				setShape(list);
 				setTestShape(pomShape);
 				//System.out.println("this is length" + list.isEmpty());
@@ -384,8 +467,9 @@ public class DrawingController {
 			if(JOptionPane.showConfirmDialog(new JFrame(), "Are you sure you want to delete selected shape?","Check",JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION)
 			{
 				model.remove(pomShape);
-				setShape(list);
 				setTestShape(null); 
+				setShape(list);
+				
 				frame.repaint();
 			}
 		}

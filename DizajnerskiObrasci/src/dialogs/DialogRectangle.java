@@ -223,12 +223,12 @@ public class DialogRectangle extends JDialog {
 					public void actionPerformed(ActionEvent arg0) {
 						try
 						{
-						Rectangle r=new Rectangle();
-						r.setHeight(Integer.parseInt(getTxtHeight()));
-						r.setWidth(Integer.parseInt(getTxtWidth()));
-						int i=Integer.parseInt(getTxtXCoordinate());
-						int j=Integer.parseInt(getTxtYCoordinate());
-						ok=true;
+						//Rectangle r=new Rectangle();
+						//r.setHeight(Integer.parseInt(getTxtHeight()));
+						//r.setWidth(Integer.parseInt(getTxtWidth()));
+						//int i=Integer.parseInt(getTxtXCoordinate());
+						//int j=Integer.parseInt(getTxtYCoordinate());
+						setOk(true);
 						dispose();
 						}
 						catch(NumberFormatException ex)
