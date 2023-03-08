@@ -26,6 +26,26 @@ private Color colSmallerEdge;
 		setSelected(selected);
 	}
 	
+	public Donut(Point center, int radius, int innerRadius, boolean selected, Color edgeColor) throws Exception {
+		this(center, radius, innerRadius, selected);
+		setColEdge(edgeColor);
+	}
+	
+	public Donut(Point center, int radius, int innerRadius, boolean selected, Color edgeColor, Color innerColor) throws Exception {
+		this(center, radius, innerRadius, selected, edgeColor);
+		setColInner(innerColor);
+	}
+	
+	public Donut(Point center, int radius, int innerRadius, Color edgeColor, Color innerColor) throws Exception {
+		super(center, radius);
+		this.innerRadius = innerRadius;
+		this.setColEdge(edgeColor);
+		this.setColInner(innerColor);
+	}
+
+	
+	
+	
 	@Override
 	public void draw(Graphics g) {
 		super.draw(g);
@@ -57,6 +77,25 @@ private Color colSmallerEdge;
 		double dFromCenter = this.getCenter().distance(p.getX(), p.getY());
 		return dFromCenter > innerRadius &&
 				super.contains(p);
+	}
+	
+	public Donut clone(Donut d) {
+		try {
+			d.getCenter().setX(this.getCenter().getX());
+			d.getCenter().setY(this.getCenter().getY());
+			try {
+				d.setRadius(this.getRadius());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			d.setInnerRadius(this.getInnerRadius());
+			d.setColEdge(this.getColEdge());
+			d.setColInner(this.getColInner());
+		} catch(Exception e) {
+			System.out.println("there was an exception" + e.getMessage());
+		}
+
+		return d;
 	}
 	
 	public int getInnerRadius() {

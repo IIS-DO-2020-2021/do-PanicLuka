@@ -5,7 +5,7 @@ import java.awt.Graphics;
 
 public class Rectangle extends Shape{
 
-	private Point upperLeftPoint;
+	private Point upperLeftPoint = new Point();
 	private int width;
 	private int height;
 	private Color innerColor;
@@ -26,6 +26,19 @@ public class Rectangle extends Shape{
 	public Rectangle(Point upperLeftPoint, int height, int width, boolean selected) throws Exception {
 		this(upperLeftPoint, height, width);
 		setSelected(selected);
+	}
+	public Rectangle(Point upperLeftPoint, int width, int height, boolean selected, Color color) throws Exception {
+		this(upperLeftPoint, width, height, selected);
+		setEdgeColor(color);
+	}
+	public Rectangle(Point upperLeftPoint, int width, int height, Color edgeColor, Color innerColor) throws Exception {
+		this(upperLeftPoint, width, height);
+		setEdgeColor(edgeColor);
+		setInnerColor(innerColor);
+	}
+	public Rectangle(Point upperLeftPoint, int width, int height, boolean selected, Color edgeColor, Color innerColor) throws Exception {
+		this(upperLeftPoint, width, height, selected, edgeColor);
+		setInnerColor(innerColor);
 	}
 
 	@Override
@@ -60,6 +73,25 @@ public class Rectangle extends Shape{
 		} else {
 			return false;
 		}
+	}
+	
+	public Rectangle clone(Rectangle r) {
+
+		try {
+			r.getUpperLeftPoint().setX(this.getUpperLeftPoint().getX());
+			r.getUpperLeftPoint().setY(this.getUpperLeftPoint().getY());
+			r.setHeight(this.getHeight());
+			r.setWidth(this.getWidth());
+			r.setEdgeColor(this.getEdgeColor());
+			r.setInnerColor(this.getInnerColor());
+
+			
+			
+		}
+		catch(Exception e){
+			System.out.println("There was an exception" + e.getMessage());
+		}
+		return r;
 	}
 	
 	public int area() {

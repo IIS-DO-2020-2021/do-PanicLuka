@@ -4,7 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 
 public class Circle extends Shape {
-	private Point center;
+	private Point center = new Point();
 	private int radius;
 	private Color colInner;
 	private Color colEdge;
@@ -24,6 +24,23 @@ public class Circle extends Shape {
 		this(center, radius);
 		setSelected(selected);
 	}
+	public Circle(Point center, int radius, boolean selected, Color edgeColor) throws Exception {
+		this(center, radius, selected);
+		setColEdge(edgeColor);
+	}
+	public Circle(Point center, int radius, Color edgeColor, Color innerColor) {
+		this.center = center;
+		this.radius = radius;
+		setColEdge(edgeColor);
+		setColInner(innerColor);
+	}
+
+	public Circle(Point center, int radius, boolean selected, Color edgeColor, Color innerColor) throws Exception {
+		this(center, radius, selected, edgeColor);
+		setColInner(innerColor);
+	}
+	
+	
 
 	@Override
 	public void draw(Graphics g) {
@@ -56,7 +73,22 @@ public class Circle extends Shape {
 	public boolean contains(Point p) {
 		return center.distance(p.getX(), p.getY()) <= radius;
 	}
+	
+	public Circle clone(Circle c) {
+		c.getCenter().setX(this.getCenter().getX());
+		c.getCenter().setY(this.getCenter().getY());
+		try {
+			c.setRadius(this.getRadius());
+		} catch (Exception e) {
+			throw new NumberFormatException("Radius has to be a value greater then 0!");
+		}
+		c.setColEdge(this.getColEdge());
+		c.setColInner(this.getColInner());
 
+		return c;
+	}
+	
+	
 	public Point getCenter() {
 		return center;
 	}

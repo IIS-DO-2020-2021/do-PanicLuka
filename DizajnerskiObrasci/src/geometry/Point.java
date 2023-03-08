@@ -22,6 +22,10 @@ public class Point extends Shape {
 		this(x, y);
 		setSelected(selected);
 	}
+	public Point(int x, int y, boolean selected, Color color) {
+		this(x, y, selected);
+		setCol(color);
+	}
 
 	@Override//Override anotacija oznacava da izvrsena metoda overrajduje metodu klase koju prosiruje, odnosno superklase
 	public void draw(Graphics g) {
@@ -49,6 +53,14 @@ public class Point extends Shape {
 	@Override
 	public boolean contains(Point p) {
 		return this.distance(p.getX(), p.getY()) <=3;
+	}
+	
+	public Point clone(Point p) {
+		p.setX(this.getX());
+		p.setY(this.getY());
+		p.setCol(this.getCol());
+
+		return p;
 	}
 	
 	public double distance(int x2, int y2) {
@@ -84,6 +96,6 @@ public class Point extends Shape {
 
 	@Override
 	public String toString() {
-		return "(" + x + ", " + y + ")" ;
+		return "(" + x + ", " + y + ")";
 	}
 }

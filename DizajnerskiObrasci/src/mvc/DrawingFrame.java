@@ -17,6 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.GroupLayout.Alignment;
+import javax.swing.ImageIcon;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.border.EmptyBorder;
 
@@ -48,6 +49,9 @@ public class DrawingFrame extends JFrame {
 	JToggleButton tglbtnSelect;
 	JToggleButton tglbtnModify;
 	JToggleButton tglbtnDelete;
+	JToggleButton tglbtnRedo;
+	JToggleButton tglbtnUndo;
+	
 
 
 	
@@ -169,6 +173,7 @@ public class DrawingFrame extends JFrame {
 		tglbtnDelete.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				controller.delete();
+				repaint();
 			}
 		});
 		/*tglbtnDelete.addMouseListener(new MouseAdapter() {
@@ -199,6 +204,34 @@ public class DrawingFrame extends JFrame {
 		tglbtnDelete.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		toolBar.add(tglbtnDelete);
 		
+		tglbtnUndo = new JToggleButton("Undo");
+		//btnUndo.setIcon(new ImageIcon(DrawingFrame.class.getResource("/images/undoIcon.png")));
+
+		tglbtnUndo.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				controller.undo();
+			}
+		});
+		group.add(tglbtnUndo);
+		tglbtnUndo.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		toolBar.add(tglbtnUndo);
+		
+		tglbtnRedo = new JToggleButton("Redo");
+		//btnUndo.setIcon(new ImageIcon(DrawingFrame.class.getResource("/images/undoIcon.png")));
+
+		tglbtnRedo.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				controller.redo();
+			}
+		});
+		group.add(tglbtnRedo);
+		tglbtnRedo.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		toolBar.add(tglbtnRedo);
+		
+		
+		
 		
 		view.setSize(new Dimension(20, 40));
 		view.setPreferredSize(new Dimension(200, 400));
@@ -221,6 +254,8 @@ public class DrawingFrame extends JFrame {
 					.addComponent(view, GroupLayout.DEFAULT_SIZE, 408, Short.MAX_VALUE))
 		);
 		contentPane.setLayout(gl_contentPane);
+		
+		
 		
 	}
 	
@@ -266,5 +301,24 @@ public class DrawingFrame extends JFrame {
 	public boolean getTglbtnDelete() {
 		return tglbtnDelete.isSelected();
 	}
+	
+	public JToggleButton getBtnUndo() {
+		return tglbtnUndo;
+	}
+	
+	public JToggleButton getBtnRedo() {
+		return tglbtnRedo;
+	}
+	
+	public void setBtnRedo(JToggleButton tglbtnRedo) {
+		this.tglbtnRedo = tglbtnRedo; 
+	}
+	
+	public void setBtnUndo(JToggleButton tglbtnUndo) {
+		this.tglbtnUndo = tglbtnUndo;
+	}
+	
+	
+	
 
 }

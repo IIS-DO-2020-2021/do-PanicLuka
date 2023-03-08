@@ -175,11 +175,11 @@ public class DialogPoint extends JDialog {
 		}
 	}
 	
-	public String getTbX() {
+	public String getTxtX() {
 		return tbX.getText();
 	}
 
-	public void setTbX(String tbX) {
+	public void setTxtX(String tbX) {
 		this.tbX.setText(tbX);
 	}
 

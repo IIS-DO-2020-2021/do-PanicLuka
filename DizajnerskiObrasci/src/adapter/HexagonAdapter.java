@@ -75,6 +75,7 @@ public class HexagonAdapter  extends Shape{
 
 	}
 	
+	
 	@Override
 	public boolean isSelected() {
 		return hexagon.isSelected();

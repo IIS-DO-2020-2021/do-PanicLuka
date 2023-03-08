@@ -4,11 +4,23 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Stack;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import adapter.HexagonAdapter;
+import command.CmdModifyPoint;
+import command.CmdModifyRectangle;
+import command.CmdModifyLine;
+import command.CmdAddShape;
+import command.CmdDeselectShape;
+import command.CmdModifyCircle;
+import command.CmdModifyDonut;
+import command.CmdModifyHexagon;
+import command.CmdRemoveShape;
+import command.CmdSelectShape;
+import command.Command;
 import dialogs.DialogCircle;
 import dialogs.DialogDonut;
 import dialogs.DialogHexagon;
@@ -25,9 +37,20 @@ import geometry.Shape;
 public class DrawingController {
 	private DrawingModel model;
     private DrawingFrame frame;
-    private ArrayList<Shape> shape=new ArrayList<Shape>();
+    private ArrayList<Shape> shapes=new ArrayList<Shape>();
+    private ArrayList<Shape> undoShapes = new ArrayList<Shape>();
+    private ArrayList<Shape> redoShapes = new ArrayList<Shape>();
 	private Point startPoint;
 	private Shape testShape;
+	
+	private Command command;
+	
+	private Stack<Command> undoStack = new Stack<Command>();
+	private Stack<Command> redoStack = new Stack<Command>();
+	
+	private int undoCounter = 0;
+	private int redoCounter = 0;
+
 	
 
     public DrawingController(DrawingModel model, DrawingFrame frame) {
@@ -49,6 +72,7 @@ public class DrawingController {
 		{
 			
 			testShape=null;
+			Command command = null;
 			Point p=new Point(e.getX(),e.getY());
 			Iterator<Shape> it=model.getShapes().iterator();
 			while(it.hasNext())
@@ -62,17 +86,41 @@ public class DrawingController {
 				
 			}
 			
+			if(testShape != null) 
+			{
+				if(testShape.isSelected())
+				{
+					command = new CmdDeselectShape(this, testShape);
+					command.execute();
+					undoStack.push(command);
+				} else {
+					command = new CmdSelectShape(this, testShape);
+					command.execute();
+					undoStack.push(command);
+				}
+				undoCounter++;			}
+			
 		}
+		
+		undoRedoButtons();
+		redoStack.clear();
+		frame.repaint();
+		
 		if(frame.getTglbtnPoint()) {
 			Point p=new Point(e.getX(),e.getY());
+			command = new CmdAddShape(model, p);
+			command.execute();
 			DialogPoint dp=new DialogPoint();
 			dp.setTbXEdt(false);
 			dp.setTxtYEdt(false);
-			dp.setTbX(Integer.toString(p.getX()));
+			dp.setTxtX(Integer.toString(p.getX()));
 			dp.setTxtY(Integer.toString(p.getY()));
 			dp.setVisible(true);
 			p.setCol(dp.getColor());
-			model.add(p);
+			undoCounter++;
+			undoStack.push(command);
+			redoStack.clear();
+			//model.add(p);
 		}
 		else if(frame.getTglbtnLine())
 		{
@@ -80,6 +128,8 @@ public class DrawingController {
 			startPoint=new Point(e.getX(),e.getY());
 			else {
 			Line l=new Line(startPoint,new Point(e.getX(),e.getY()));
+			command = new CmdAddShape(model, l);
+			command.execute();
 			DialogLine dl=new DialogLine();
 			dl.setTxtEndCoordXEdt(false);
 			dl.setTxtEndCoordYEdt(false);
@@ -91,13 +141,17 @@ public class DrawingController {
 			dl.setTxtEndCoordY(Integer.toString(l.getEndPoint().getY()));
 			dl.setVisible(true);
 			l.setCol(dl.getCol());
-			model.add(l);
+			undoCounter++;
+			undoStack.push(command);
+			redoStack.clear();
+			//model.add(l);
 			startPoint=null;
 			}
 		}
 		else if(frame.getTglbtnHexagon())
 		{
 			Point p=new Point(e.getX(),e.getY());
+			
 			DialogHexagon dija=new DialogHexagon();
 			dija.setTxtCoordX(Integer.toString(p.getX()));
 			dija.setTxtCoordY(Integer.toString(p.getY()));
@@ -117,11 +171,16 @@ public class DrawingController {
 					,dija.getColEdge(),
 					dija.getColInner());
 			h.setHexagonRadius(radius);
-			System.out.println(radius);
-
 			h.setHexagonBorderColor(dija.getColEdge());
 			h.setHexagonInnerColor(dija.getColInner());
-			model.add(h);
+			command = new CmdAddShape(model, h);
+			command.execute();
+
+			
+			undoCounter++;
+			undoStack.push(command);
+			redoStack.clear();
+			//model.add(h);
 			}
 			catch(NumberFormatException ex)
 			{
@@ -147,9 +206,14 @@ public class DrawingController {
 			int width=Integer.parseInt(dija.getTxtWidth());
 			int height=Integer.parseInt(dija.getTxtHeight());
 			Rectangle rct=new Rectangle(p,width,height);
+			command = new CmdAddShape(model, rct);
+			command.execute();
 			rct.setEdgeColor(dija.getEdgeColor());
 			rct.setInnerColor(dija.getEdgeColor());
-			model.add(rct);
+			undoCounter++;
+			undoStack.push(command);
+			redoStack.clear();
+			//model.add(rct);
 			}
 			catch(NumberFormatException ex)
 			{
@@ -176,9 +240,14 @@ public class DrawingController {
 			{
 				int radius=Integer.parseInt(dija.getTextDiametar());
 				Circle circle=new Circle(center,radius);
+				command = new CmdAddShape(model, circle);
+				command.execute();
 				circle.setColEdge(dija.getColEdge());
 				circle.setColInner(dija.getColInner());
-				model.add(circle);
+				undoCounter++;
+				undoStack.push(command);
+				redoStack.clear();
+				//model.add(circle);
 			
 			}
 			}
@@ -206,10 +275,15 @@ public class DrawingController {
 				int innerRadius=Integer.parseInt(dija.getTxtInner());
 				int outerRadius=Integer.parseInt(dija.getTxtEdge());
 				Donut donut=new Donut(center,outerRadius,innerRadius);
+				command = new CmdAddShape(model, donut);
+				command.execute();
 				donut.setColEdge(dija.getColEdge());
 				donut.setColSmallerEdge(dija.getColEdge());
 				donut.setColInner(dija.getColInner());
-				model.add(donut);
+				undoCounter++;
+				undoStack.push(command);
+				redoStack.clear();
+				//model.add(donut);
 			}
 			}
 			catch(NumberFormatException ex)
@@ -226,15 +300,19 @@ public class DrawingController {
 		{
 			testShape.setSelected(true);
 		}
-		if(shape!=null) 
+		if(shapes!=null) {
 			frame.repaint();
+		}
+		
+		undoRedoButtons();
+		frame.repaint();
 	}
     protected void modify() {
     	if(getTestShape()!=null)
 		{
 			Shape pomShape=getTestShape();
-			ArrayList<Shape> list=getShape();
-			int index=list.indexOf(pomShape);
+			//ArrayList<Shape> list=getShape();
+			//int index=list.indexOf(pomShape);
 			//model.add(pomShape);
 			//System.out.println(pomShape);
 			
@@ -243,26 +321,41 @@ public class DrawingController {
 		if(getTestShape() instanceof Point)
 		{
 			//System.out.println(getTestShape() instanceof Point);
+			Point oldPoint = (Point) getTestShape();
 
 			DialogPoint mt=new DialogPoint();
-			mt.setTbX(Integer.toString(((Point) pomShape).getX()));
+			mt.setTxtX(Integer.toString(((Point) pomShape).getX()));
 			mt.setTxtY(Integer.toString(((Point) pomShape).getY()));
 			mt.setColor(((Point)pomShape).getCol());
 			mt.setVisible(true);
 			try {
 			if(mt.isOk())
 			{
-				
-			((Point) pomShape).setX(Integer.parseInt(mt.getTbX()));
+			Point newPoint = new Point(Integer.parseInt(mt.getTxtX()), Integer.parseInt(mt.getTxtY()), true, mt.getColor());
+			
+			command = new CmdModifyPoint(oldPoint, newPoint);
+			command.execute();
+			
+			
+			
+			undoStack.push(command);
+			undoCounter++;
+			redoStack.clear();
+			
+			/*((Point) pomShape).setX(Integer.parseInt(mt.getTxtX()));
 			((Point) pomShape).setY(Integer.parseInt(mt.getTxtY()));
-			((Point) pomShape).setCol(mt.getColor());
+			((Point) pomShape).setCol(mt.getColor());*/
+			
+			
+			
+			
 			
 			//breaks here
-			model.add(pomShape);
-			System.out.println(list.isEmpty() + "executing lines of code");
+			//model.add(pomShape);
+			//setTestShape(pomShape);
 			
-			setShape(list);
-			setTestShape(pomShape);
+			//setShape(list);
+			
 			//frame.repaint();
 			
 			
@@ -277,6 +370,12 @@ public class DrawingController {
 		}
 		else if(getTestShape() instanceof Line)
 		{
+			Line oldLine = (Line) getTestShape();
+			
+			//System.out.println("asfs" + oldLine.toString());
+			
+			
+			
 			DialogLine ml=new DialogLine();
 			ml.setTxtStartCoordX(Integer.toString(((Line) pomShape).getStartPoint().getX()));
 			ml.setTxtStartCoordY(Integer.toString(((Line) pomShape).getStartPoint().getY()));
@@ -288,14 +387,40 @@ public class DrawingController {
 			{
 			if(ml.isOk())
 			{
-				((Line)pomShape).setStartPoint(new Point((Integer.parseInt(ml.getTxtStartCoordX())),(Integer.parseInt(ml.getTxtStartCoordY()))));
-				((Line)pomShape).setEndPoint(new Point((Integer.parseInt(ml.getTxtEndCoordX())),(Integer.parseInt(ml.getTxtEndCoordY()))));
-				((Line)pomShape).setCol(ml.getCol());
-				model.add(pomShape);
+				Line newLine = new Line(
+						new Point(Integer.parseInt(ml.getTxtStartCoordX()),
+								Integer.parseInt(ml.getTxtStartCoordY()), true),
+						new Point(Integer.parseInt(ml.getTxtEndCoordX()),
+								Integer.parseInt(ml.getTxtEndCoordY()), true),
+							true,
+						ml.getCol()
+						
+						);
+				//System.out.println("this" + oldLine.toString());
+				//System.out.println("this" + newLine.toString());
+
+				
+				command = new CmdModifyLine(oldLine, newLine);
+				//System.out.println("breaks");
+				command.execute();
+				
+				undoStack.push(command);
+				undoCounter++;
+				redoStack.clear();
+				
+				//((Line)pomShape).setStartPoint(new Point((Integer.parseInt(ml.getTxtStartCoordX())),(Integer.parseInt(ml.getTxtStartCoordY()))));
+				//((Line)pomShape).setEndPoint(new Point((Integer.parseInt(ml.getTxtEndCoordX())),(Integer.parseInt(ml.getTxtEndCoordY()))));
+				//((Line)pomShape).setCol(ml.getCol());
+				//model.add(pomShape);
+				
+				
+				
 				//list.set(index,pomShape);
-				setShape(list);
-				setTestShape(pomShape);
-				frame.repaint();
+				//setShape(list);
+				
+				
+				//setTestShape(pomShape);
+				//frame.repaint();
 			}
 			}
 			catch(Exception ex)
@@ -305,6 +430,9 @@ public class DrawingController {
 		}
 		else if(getTestShape() instanceof Rectangle)
 		{
+			Rectangle oldRectangle = (Rectangle) getTestShape();
+			
+			
 			DialogRectangle dp=new DialogRectangle();
 			dp.setTxtXCoordinate(Integer.toString(((Rectangle)pomShape).getUpperLeftPoint().getX()));
 			dp.setTxtYCoordinate(Integer.toString(((Rectangle)pomShape).getUpperLeftPoint().getY()));
@@ -317,16 +445,32 @@ public class DrawingController {
 			{
 			if(dp.isOk())
 			{
-				((Rectangle)pomShape).setUpperLeftPoint(new Point(Integer.parseInt(dp.getTxtXCoordinate()),Integer.parseInt(dp.getTxtYCoordinate())));
-				((Rectangle)pomShape).setHeight(Integer.parseInt(dp.getTxtHeight()));
-				((Rectangle)pomShape).setWidth(Integer.parseInt(dp.getTxtWidth()));
-				((Rectangle)pomShape).setEdgeColor(dp.getEdgeColor());
-				((Rectangle)pomShape).setInnerColor(dp.getInnerColor());
+				Rectangle newRectangle = new Rectangle(
+						new Point(Integer.parseInt(dp.getTxtXCoordinate()),
+								Integer.parseInt(dp.getTxtYCoordinate())),
+								Integer.parseInt(dp.getTxtWidth()),
+								Integer.parseInt(dp.getTxtHeight()),
+								true,
+								dp.getEdgeColor(),
+								dp.getInnerColor()
+						);
+				
+				command = new CmdModifyRectangle(oldRectangle, newRectangle);
+				command.execute();
+				
+				undoCounter++;
+				undoStack.push(command);
+				redoStack.clear();
+				//((Rectangle)pomShape).setUpperLeftPoint(new Point(Integer.parseInt(dp.getTxtXCoordinate()),Integer.parseInt(dp.getTxtYCoordinate())));
+				//((Rectangle)pomShape).setHeight(Integer.parseInt(dp.getTxtHeight()));
+				//((Rectangle)pomShape).setWidth(Integer.parseInt(dp.getTxtWidth()));
+				//((Rectangle)pomShape).setEdgeColor(dp.getEdgeColor());
+				//((Rectangle)pomShape).setInnerColor(dp.getInnerColor());
 				//list.set(index,pomShape);
-				model.add(pomShape);
-				setShape(list);
-				setTestShape(pomShape);
-				frame.repaint();
+				//model.add(pomShape);
+				//setShape(list);
+				//setTestShape(pomShape);
+				//frame.repaint();
 			}
 			}
 			catch(NumberFormatException ex)
@@ -341,6 +485,8 @@ public class DrawingController {
 		}
 		else if(getTestShape() instanceof HexagonAdapter)
 		{
+			HexagonAdapter oldHexagon = (HexagonAdapter) getTestShape();
+			
 			DialogHexagon dh=new DialogHexagon();
 			dh.setTxtCoordX(Integer.toString(((HexagonAdapter)pomShape).getHexagonCenter().getX()));
 			dh.setTxtCoordY(Integer.toString(((HexagonAdapter)pomShape).getHexagonCenter().getY()));
@@ -353,16 +499,33 @@ public class DrawingController {
 			{
 			if(dh.isOk())
 			{
-				((HexagonAdapter)pomShape).setHexagonCenter(new Point(Integer.parseInt(dh.getTxtCoordX()), Integer.parseInt(dh.getTxtCoordY())));
-				((HexagonAdapter)pomShape).setHexagonRadius(Integer.parseInt(dh.getTextRadius()));
-				((HexagonAdapter)pomShape).setHexagonBorderColor(dh.getColEdge());
-				((HexagonAdapter)pomShape).setHexagonInnerColor(dh.getColInner());
-				//list.set(index,pomShape);
-				model.add(pomShape);
-				setShape(list);
-				setTestShape(pomShape);
+				HexagonAdapter newHexagon = new HexagonAdapter(
+						new Point(Integer.parseInt(dh.getTxtCoordX()),
+								Integer.parseInt(dh.getTxtCoordY())),
+								Integer.parseInt(dh.getTextRadius()),
+								true,
+								dh.getColEdge(),
+								dh.getColInner()
+						);
 				
-				frame.repaint();
+				command = new CmdModifyHexagon(oldHexagon, newHexagon);
+				command.execute();
+				
+				
+				undoCounter++;
+				undoStack.push(command);
+				redoStack.clear();
+				
+//				((HexagonAdapter)pomShape).setHexagonCenter(new Point(Integer.parseInt(dh.getTxtCoordX()), Integer.parseInt(dh.getTxtCoordY())));
+//				((HexagonAdapter)pomShape).setHexagonRadius(Integer.parseInt(dh.getTextRadius()));
+//				((HexagonAdapter)pomShape).setHexagonBorderColor(dh.getColEdge());
+//				((HexagonAdapter)pomShape).setHexagonInnerColor(dh.getColInner());
+//				//list.set(index,pomShape);
+//				model.add(pomShape);
+//				//setShape(list);
+//				setTestShape(pomShape);
+//				
+//				frame.repaint();
 				
 			}
 			}
@@ -380,6 +543,8 @@ public class DrawingController {
 		}
 		else if(getTestShape() instanceof Donut)
 		{
+			Donut oldDonut = (Donut) getTestShape();
+			
 			DialogDonut dk=new DialogDonut();
 			dk.setTxtCoordX(Integer.toString(((Donut)pomShape).getCenter().getX()));
 			dk.setTxtCoordY(Integer.toString(((Donut)pomShape).getCenter().getY()));
@@ -391,17 +556,34 @@ public class DrawingController {
 			try {
 			if(dk.isOk())
 			{
-				((Donut)pomShape).setCenter(new Point(Integer.parseInt(dk.getTxtCoordX()),Integer.parseInt(dk.getTxtCoordY())));
-				((Donut)pomShape).setInnerRadius(Integer.parseInt(dk.getTxtInner()));
-				((Donut)pomShape).setRadius(Integer.parseInt(dk.getTxtEdge()));
-				((Donut)pomShape).setColEdge(dk.getColEdge());
-				((Donut)pomShape).setColSmallerEdge(dk.getColEdge());
-				((Donut)pomShape).setColInner(dk.getColInner());
-				//list.set(index,pomShape);
-				model.add(pomShape);
-				setShape(list);
-				setTestShape(pomShape);
-				frame.repaint();
+				Donut newDonut = new Donut(
+						new Point(Integer.parseInt(dk.getTxtCoordX()),
+								Integer.parseInt(dk.getTxtCoordY())),
+								Integer.parseInt(dk.getTxtEdge()),
+								Integer.parseInt(dk.getTxtInner()),
+								true,
+								dk.getColEdge(),
+								dk.getColInner()
+						);
+				command = new CmdModifyDonut(oldDonut, newDonut);
+				command.execute();
+				
+				undoCounter++;
+				undoStack.push(command);
+				redoStack.clear();
+				
+				
+//				((Donut)pomShape).setCenter(new Point(Integer.parseInt(dk.getTxtCoordX()),Integer.parseInt(dk.getTxtCoordY())));
+//				((Donut)pomShape).setInnerRadius(Integer.parseInt(dk.getTxtInner()));
+//				((Donut)pomShape).setRadius(Integer.parseInt(dk.getTxtEdge()));
+//				((Donut)pomShape).setColEdge(dk.getColEdge());
+//				((Donut)pomShape).setColSmallerEdge(dk.getColEdge());
+//				((Donut)pomShape).setColInner(dk.getColInner());
+//				//list.set(index,pomShape);
+//				model.add(pomShape);
+//				//setShape(list);
+//				setTestShape(pomShape);
+//				frame.repaint();
 			}
 			}
 			catch(NumberFormatException e)
@@ -415,6 +597,8 @@ public class DrawingController {
 			
 		}else if(getTestShape() instanceof Circle)
 		{
+			Circle oldCircle = (Circle) getTestShape();
+			
 			DialogCircle dk=new DialogCircle();
 			dk.setTxtCoordX(Integer.toString(((Circle)pomShape).getCenter().getX()));
 			dk.setTxtCoordY(Integer.toString(((Circle)pomShape).getCenter().getY()));
@@ -426,16 +610,32 @@ public class DrawingController {
 			{
 			if(dk.isOk())
 			{
-				((Circle)pomShape).setCenter(new Point(Integer.parseInt(dk.getTxtCoordX()),Integer.parseInt(dk.getTxtCoordY())));
-				((Circle)pomShape).setRadius(Integer.parseInt(dk.getTextDiametar()));
-				((Circle)pomShape).setColEdge(dk.getColEdge());
-				((Circle)pomShape).setColInner(dk.getColInner());
-				//list.set(index,pomShape);
-				model.add(pomShape);
-				setShape(list);
-				setTestShape(pomShape);
-				//System.out.println("this is length" + list.isEmpty());
-				frame.repaint();
+				Circle newCircle = new Circle(
+						new Point(Integer.parseInt(dk.getTxtCoordX()),
+								Integer.parseInt(dk.getTxtCoordY())),
+						Integer.parseInt(dk.getTextDiametar()),
+						true,
+						dk.getColEdge(),
+						dk.getColInner()
+						);
+				
+				command = new CmdModifyCircle(oldCircle, newCircle);
+				command.execute();
+				
+				undoCounter++;
+				undoStack.push(command);
+				redoStack.clear();
+				
+//				((Circle)pomShape).setCenter(new Point(Integer.parseInt(dk.getTxtCoordX()),Integer.parseInt(dk.getTxtCoordY())));
+//				((Circle)pomShape).setRadius(Integer.parseInt(dk.getTextDiametar()));
+//				((Circle)pomShape).setColEdge(dk.getColEdge());
+//				((Circle)pomShape).setColInner(dk.getColInner());
+//				//list.set(index,pomShape);
+//				model.add(pomShape);
+//				//setShape(list);
+//				setTestShape(pomShape);
+//				//System.out.println("this is length" + list.isEmpty());
+//				frame.repaint();
 				
 			}
 			}
@@ -458,7 +658,30 @@ public class DrawingController {
 	}
     
     protected void delete() { 
-    	if(getTestShape()!=null)
+    	Shape shape;
+    	
+    	for(int i = shapes.size() - 1; i>=0;i--)
+    	{
+    		shape = shapes.get(0);
+    		command = new CmdRemoveShape(model, shape, model.getShapes().indexOf(shape));
+    		command.execute();
+    		shapes.remove(shape);
+    		undoShapes.add(shape);
+    		undoStack.push(command);
+    		undoCounter++;
+    		
+    	}
+    	
+    	if(JOptionPane.showConfirmDialog(new JFrame(), "Are you sure you want to delete selected shape?","Check",JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION)
+		{
+    		redoStack.clear();
+        	undoRedoButtons();
+        	frame.repaint();
+		}
+    	
+    	
+    	
+    	/*if(getTestShape()!=null)
 		{
 			Shape pomShape=getTestShape();
 			ArrayList<Shape> list=getShape();
@@ -477,18 +700,18 @@ public class DrawingController {
 		{
 			setStartPoint(null);
 			JOptionPane.showMessageDialog(new JFrame(), "No shape selected", "Error!", JOptionPane.WARNING_MESSAGE);
-		}
+		}*/
 
 	}
 
     
     
     public ArrayList<Shape> getShape() {
-		return shape;
+		return shapes;
 	}
 
 	public void setShape(ArrayList<Shape> shape) {
-		this.shape = shape;
+		this.shapes = shape;
 	}
 
 	public Shape getTestShape() {
@@ -502,6 +725,67 @@ public class DrawingController {
 	public void setStartPoint(Point p)
 	{
 		this.startPoint=p;
+	}
+
+	public void undoRedoButtons() {
+		if (undoCounter < 1) {
+			frame.getBtnUndo().setEnabled(false);
+		} else {
+			frame.getBtnUndo().setEnabled(true);
+		}
+
+		if (redoCounter < 1 || redoStack.isEmpty()) {
+			frame.getBtnRedo().setEnabled(false);
+		} else {
+			frame.getBtnRedo().setEnabled(true);
+		}
+	}
+
+	public void undo() {
+		command = undoStack.peek();
+		command.unexecute();
+		int index = undoShapes.size() - 1;
+		
+		if(command instanceof CmdRemoveShape)
+		{
+			redoShapes.add(undoShapes.get(index));
+			shapes.add(undoShapes.get(index));
+			undoShapes.remove(index);
+		}
+		
+		redoCounter++;
+		undoCounter--;
+		
+		frame.repaint();
+		undoStack.pop();
+		redoStack.push(command);
+		
+		undoRedoButtons();
+		
+	}
+
+
+	public void redo() {
+		command = redoStack.peek();
+		command.execute();
+		int index = redoShapes.size() - 1;
+		if(command instanceof CmdRemoveShape)
+		{
+			undoShapes.add(redoShapes.get(index));
+			shapes.add(redoShapes.get(index));
+			redoShapes.remove(index);
+		}
+		
+		
+		redoCounter--;
+		undoCounter++;
+		
+		frame.repaint();
+		redoStack.pop();
+		undoStack.push(command);
+		
+		undoRedoButtons();
+		
 	}
 
 }

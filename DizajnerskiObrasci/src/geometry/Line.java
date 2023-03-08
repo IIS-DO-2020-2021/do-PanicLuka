@@ -4,8 +4,8 @@ import java.awt.Color;
 import java.awt.Graphics;
 
 public class Line extends Shape {
-	private Point startPoint;
-	private Point endPoint;
+	private Point startPoint = new Point();
+	private Point endPoint = new Point();
 	private Color col;
 	
 	public Line() {
@@ -17,9 +17,20 @@ public class Line extends Shape {
 		setEndPoint(endPoint);
 	}
 	
+	public Line(Point startPoint, Point endPoint, Color color) {
+		this.startPoint = startPoint;
+		this.endPoint = endPoint;
+		setCol(color);
+	}
+	
 	public Line(Point startPoint, Point endPoint, boolean selected) {
 		this(startPoint, endPoint);
 		setSelected(selected);
+	}
+	
+	public Line(Point startPoint, Point endPoint, boolean selected, Color color) {
+		this(startPoint, endPoint, selected);
+		setCol(color);
 	}
 
 	@Override
@@ -56,6 +67,18 @@ public class Line extends Shape {
 		return false;
 	}
 	
+	public Line clone(Line l) {
+		//System.out.println("sdgsdg" + l.toString());
+		
+		l.getStartPoint().setX(this.getStartPoint().getX());
+		l.getStartPoint().setY(this.getStartPoint().getY());
+		l.getEndPoint().setX(this.getEndPoint().getX());
+		l.getEndPoint().setY(this.getEndPoint().getY());
+		l.setCol(this.getCol());
+
+		return l;
+	}
+	
 	public double length() {
 		return startPoint.distance(endPoint.getX(), endPoint.getY());
 	}
@@ -83,6 +106,6 @@ public class Line extends Shape {
 
 	@Override
 	public String toString() {
-		return startPoint + "-->" + endPoint;
+		return startPoint + "-->" + endPoint + col;
 	}
 }
