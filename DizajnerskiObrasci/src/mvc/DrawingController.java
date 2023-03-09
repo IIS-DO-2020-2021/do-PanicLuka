@@ -92,10 +92,12 @@ public class DrawingController {
 				{
 					command = new CmdDeselectShape(this, testShape);
 					command.execute();
+					frame.getTextArea().append(command.toString());
 					undoStack.push(command);
 				} else {
 					command = new CmdSelectShape(this, testShape);
 					command.execute();
+					frame.getTextArea().append(command.toString());
 					undoStack.push(command);
 				}
 				undoCounter++;			}
@@ -110,6 +112,7 @@ public class DrawingController {
 			Point p=new Point(e.getX(),e.getY());
 			command = new CmdAddShape(model, p);
 			command.execute();
+			frame.getTextArea().append(command.toString());
 			DialogPoint dp=new DialogPoint();
 			dp.setTbXEdt(false);
 			dp.setTxtYEdt(false);
@@ -130,6 +133,7 @@ public class DrawingController {
 			Line l=new Line(startPoint,new Point(e.getX(),e.getY()));
 			command = new CmdAddShape(model, l);
 			command.execute();
+			frame.getTextArea().append(command.toString());
 			DialogLine dl=new DialogLine();
 			dl.setTxtEndCoordXEdt(false);
 			dl.setTxtEndCoordYEdt(false);
@@ -175,7 +179,7 @@ public class DrawingController {
 			h.setHexagonInnerColor(dija.getColInner());
 			command = new CmdAddShape(model, h);
 			command.execute();
-
+			frame.getTextArea().append(command.toString());
 			
 			undoCounter++;
 			undoStack.push(command);
@@ -208,6 +212,7 @@ public class DrawingController {
 			Rectangle rct=new Rectangle(p,width,height);
 			command = new CmdAddShape(model, rct);
 			command.execute();
+			frame.getTextArea().append(command.toString());
 			rct.setEdgeColor(dija.getEdgeColor());
 			rct.setInnerColor(dija.getEdgeColor());
 			undoCounter++;
@@ -242,6 +247,7 @@ public class DrawingController {
 				Circle circle=new Circle(center,radius);
 				command = new CmdAddShape(model, circle);
 				command.execute();
+				frame.getTextArea().append(command.toString());
 				circle.setColEdge(dija.getColEdge());
 				circle.setColInner(dija.getColInner());
 				undoCounter++;
@@ -277,6 +283,7 @@ public class DrawingController {
 				Donut donut=new Donut(center,outerRadius,innerRadius);
 				command = new CmdAddShape(model, donut);
 				command.execute();
+				frame.getTextArea().append(command.toString());
 				donut.setColEdge(dija.getColEdge());
 				donut.setColSmallerEdge(dija.getColEdge());
 				donut.setColInner(dija.getColInner());
@@ -335,7 +342,7 @@ public class DrawingController {
 			
 			command = new CmdModifyPoint(oldPoint, newPoint);
 			command.execute();
-			
+			frame.getTextArea().append(command.toString());
 			
 			
 			undoStack.push(command);
@@ -404,6 +411,7 @@ public class DrawingController {
 				//System.out.println("breaks");
 				command.execute();
 				
+				frame.getTextArea().append(command.toString());
 				undoStack.push(command);
 				undoCounter++;
 				redoStack.clear();
@@ -457,6 +465,7 @@ public class DrawingController {
 				
 				command = new CmdModifyRectangle(oldRectangle, newRectangle);
 				command.execute();
+				frame.getTextArea().append(command.toString());
 				
 				undoCounter++;
 				undoStack.push(command);
@@ -510,7 +519,7 @@ public class DrawingController {
 				
 				command = new CmdModifyHexagon(oldHexagon, newHexagon);
 				command.execute();
-				
+				frame.getTextArea().append(command.toString());
 				
 				undoCounter++;
 				undoStack.push(command);
@@ -567,6 +576,7 @@ public class DrawingController {
 						);
 				command = new CmdModifyDonut(oldDonut, newDonut);
 				command.execute();
+				frame.getTextArea().append(command.toString());
 				
 				undoCounter++;
 				undoStack.push(command);
@@ -621,6 +631,7 @@ public class DrawingController {
 				
 				command = new CmdModifyCircle(oldCircle, newCircle);
 				command.execute();
+				frame.getTextArea().append(command.toString());
 				
 				undoCounter++;
 				undoStack.push(command);
@@ -665,6 +676,7 @@ public class DrawingController {
     		shape = shapes.get(0);
     		command = new CmdRemoveShape(model, shape, model.getShapes().indexOf(shape));
     		command.execute();
+    		frame.getTextArea().append(command.toString());
     		shapes.remove(shape);
     		undoShapes.add(shape);
     		undoStack.push(command);
@@ -752,9 +764,12 @@ public class DrawingController {
 			shapes.add(undoShapes.get(index));
 			undoShapes.remove(index);
 		}
+		frame.getTextArea().append("Undo " + undoStack.peek().toString());
 		
 		redoCounter++;
 		undoCounter--;
+		
+		
 		
 		frame.repaint();
 		undoStack.pop();
@@ -775,7 +790,7 @@ public class DrawingController {
 			shapes.add(redoShapes.get(index));
 			redoShapes.remove(index);
 		}
-		
+		frame.getTextArea().append("Redo " + redoStack.peek().toString());
 		
 		redoCounter--;
 		undoCounter++;

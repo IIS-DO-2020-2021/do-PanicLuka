@@ -1,6 +1,7 @@
 package mvc;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
@@ -14,6 +15,8 @@ import javax.swing.GroupLayout;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.GroupLayout.Alignment;
@@ -51,6 +54,9 @@ public class DrawingFrame extends JFrame {
 	JToggleButton tglbtnDelete;
 	JToggleButton tglbtnRedo;
 	JToggleButton tglbtnUndo;
+	
+	private JScrollPane scrollPane;
+	private JTextArea textArea;
 	
 
 
@@ -230,11 +236,14 @@ public class DrawingFrame extends JFrame {
 		tglbtnRedo.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		toolBar.add(tglbtnRedo);
 		
+		JPanel panelLog = new JPanel();
+		panelLog.setBackground(Color.WHITE);
 		
 		
 		
 		view.setSize(new Dimension(20, 40));
 		view.setPreferredSize(new Dimension(200, 400));
+		
 		contentPane.add(view);
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
 		gl_contentPane.setHorizontalGroup(
@@ -244,6 +253,7 @@ public class DrawingFrame extends JFrame {
 					.addContainerGap()
 					.addComponent(toolBar, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 					.addContainerGap(129, Short.MAX_VALUE))
+					//.addComponent(panelLog, Alignment.LEADING, 0, 0, Short.MAX_VALUE)
 		);
 		gl_contentPane.setVerticalGroup(
 			gl_contentPane.createParallelGroup(Alignment.LEADING)
@@ -252,8 +262,41 @@ public class DrawingFrame extends JFrame {
 					.addComponent(toolBar, GroupLayout.PREFERRED_SIZE, 46, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(view, GroupLayout.DEFAULT_SIZE, 408, Short.MAX_VALUE))
+					//.addComponent(panelLog, GroupLayout.PREFERRED_SIZE, 109, GroupLayout.PREFERRED_SIZE)
 		);
+		
+		
+		
 		contentPane.setLayout(gl_contentPane);
+		
+		
+		scrollPane = new JScrollPane();
+		
+		GroupLayout gl_PanelLog = new GroupLayout(panelLog);
+		gl_PanelLog.setHorizontalGroup(gl_PanelLog.createParallelGroup(Alignment.LEADING)
+				.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 946, Short.MAX_VALUE));
+		gl_PanelLog.setVerticalGroup(gl_PanelLog.createParallelGroup(Alignment.TRAILING)
+				.addComponent(scrollPane, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 109, Short.MAX_VALUE));
+		
+		
+		
+		
+		textArea = new JTextArea();
+		textArea.setEditable(false);
+		scrollPane.setViewportView(textArea);
+		
+		panelLog.setLayout(gl_PanelLog);
+		
+		
+		
+		view.add(panelLog);
+		
+		
+		
+		
+		
+		
+		
 		
 		
 		
@@ -318,7 +361,9 @@ public class DrawingFrame extends JFrame {
 		this.tglbtnUndo = tglbtnUndo;
 	}
 	
-	
+	public JTextArea getTextArea() {
+		return textArea;
+	}
 	
 
 }
