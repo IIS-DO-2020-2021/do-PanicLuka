@@ -6,6 +6,8 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
+import java.io.NotSerializableException;
 import java.util.ArrayList;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -21,6 +23,7 @@ import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.border.EmptyBorder;
 
@@ -54,6 +57,8 @@ public class DrawingFrame extends JFrame {
 	JToggleButton tglbtnDelete;
 	JToggleButton tglbtnRedo;
 	JToggleButton tglbtnUndo;
+	JButton btnSavePainting;
+	JButton btnSaveLog;
 	
 	private JScrollPane scrollPane;
 	private JTextArea textArea;
@@ -71,7 +76,7 @@ public class DrawingFrame extends JFrame {
 	    });
 	    getContentPane().add(view, BorderLayout.CENTER);
 		
-		//DrawingView panel= new DrawingView();
+		
 		setExtendedState(MAXIMIZED_BOTH);
 		setTitle("IT67-2018, Luka Panic");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -182,36 +187,13 @@ public class DrawingFrame extends JFrame {
 				repaint();
 			}
 		});
-		/*tglbtnDelete.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-				if(controller.getTestShape()!=null)
-				{
-					Shape pomShape=controller.getTestShape();
-					ArrayList<Shape> list=controller.getShape();
-					int index=list.indexOf(pomShape);
-					if(JOptionPane.showConfirmDialog(new JFrame(), "Are you sure you want to delete selected shape?","Check",JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION)
-					{
-						list.remove(index);
-						controller.setShape(list);
-						controller.setTestShape(null); 
-						repaint();
-					}
-				}
-				else
-				{
-					controller.setStartPoint(null);
-					JOptionPane.showMessageDialog(new JFrame(), "No shape selected", "Error!", JOptionPane.WARNING_MESSAGE);
-				}
-	
-			}
-		});*/
+		
 		group.add(tglbtnDelete);
 		tglbtnDelete.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		toolBar.add(tglbtnDelete);
 		
 		tglbtnUndo = new JToggleButton("Undo");
-		//btnUndo.setIcon(new ImageIcon(DrawingFrame.class.getResource("/images/undoIcon.png")));
+	
 
 		tglbtnUndo.addMouseListener(new MouseAdapter() {
 			@Override
@@ -224,7 +206,7 @@ public class DrawingFrame extends JFrame {
 		toolBar.add(tglbtnUndo);
 		
 		tglbtnRedo = new JToggleButton("Redo");
-		//btnUndo.setIcon(new ImageIcon(DrawingFrame.class.getResource("/images/undoIcon.png")));
+	
 
 		tglbtnRedo.addMouseListener(new MouseAdapter() {
 			@Override
@@ -235,6 +217,43 @@ public class DrawingFrame extends JFrame {
 		group.add(tglbtnRedo);
 		tglbtnRedo.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		toolBar.add(tglbtnRedo);
+		
+		
+		btnSavePainting = new JButton("Save Painting");
+		
+
+		btnSavePainting.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				try {
+					controller.savePainting();
+				
+				} catch (IOException e1) {
+				
+					e1.printStackTrace();
+				}
+			}
+		});
+		group.add(btnSavePainting);
+		btnSavePainting.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		toolBar.add(btnSavePainting);
+		
+		
+		btnSaveLog = new JButton("Save Log");
+	
+
+		btnSaveLog.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				controller.saveLog();
+			}
+		});
+		group.add(btnSaveLog);
+		btnSaveLog.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		toolBar.add(btnSaveLog);
+		
+		
+		
 		
 		JPanel panelLog = new JPanel();
 		panelLog.setBackground(Color.WHITE);
@@ -253,7 +272,6 @@ public class DrawingFrame extends JFrame {
 					.addContainerGap()
 					.addComponent(toolBar, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 					.addContainerGap(129, Short.MAX_VALUE))
-					//.addComponent(panelLog, Alignment.LEADING, 0, 0, Short.MAX_VALUE)
 		);
 		gl_contentPane.setVerticalGroup(
 			gl_contentPane.createParallelGroup(Alignment.LEADING)
@@ -262,7 +280,6 @@ public class DrawingFrame extends JFrame {
 					.addComponent(toolBar, GroupLayout.PREFERRED_SIZE, 46, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(view, GroupLayout.DEFAULT_SIZE, 408, Short.MAX_VALUE))
-					//.addComponent(panelLog, GroupLayout.PREFERRED_SIZE, 109, GroupLayout.PREFERRED_SIZE)
 		);
 		
 		
@@ -291,14 +308,7 @@ public class DrawingFrame extends JFrame {
 		
 		view.add(panelLog);
 		
-		
-		
-		
-		
-		
-		
-		
-		
+	
 		
 	}
 	

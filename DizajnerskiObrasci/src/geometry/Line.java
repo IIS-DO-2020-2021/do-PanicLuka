@@ -68,7 +68,7 @@ public class Line extends Shape {
 	}
 	
 	public Line clone(Line l) {
-		//System.out.println("sdgsdg" + l.toString());
+		
 		
 		l.getStartPoint().setX(this.getStartPoint().getX());
 		l.getStartPoint().setY(this.getStartPoint().getY());

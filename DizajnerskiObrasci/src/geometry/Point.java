@@ -27,7 +27,7 @@ public class Point extends Shape {
 		setCol(color);
 	}
 
-	@Override//Override anotacija oznacava da izvrsena metoda overrajduje metodu klase koju prosiruje, odnosno superklase
+	@Override
 	public void draw(Graphics g) {
 		if(this.col!=null)
 			g.setColor(col);

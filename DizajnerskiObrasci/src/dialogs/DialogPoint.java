@@ -146,8 +146,7 @@ public class DialogPoint extends JDialog {
 					@Override
 					public void actionPerformed(ActionEvent arg0) {
 						try {
-						//int i=Integer.parseInt(getTbX());
-						//int j=Integer.parseInt(getTxtY());
+						
 						setOk(true);
 						dispose();
 						}

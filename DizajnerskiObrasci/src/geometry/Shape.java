@@ -1,8 +1,9 @@
 package geometry;
 
 import java.awt.Graphics;
+import java.io.Serializable;
 
-public abstract class Shape {
+public abstract class Shape implements Serializable{
 
 	private boolean selected;
 

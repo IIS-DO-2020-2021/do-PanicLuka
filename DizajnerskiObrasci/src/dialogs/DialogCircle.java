@@ -194,10 +194,7 @@ public class DialogCircle extends JDialog {
 					{
 						try
 						{
-						//Circle c= new Circle();
-						//c.setRadius(Integer.parseInt(getTextDiametar()));
-						//int i=Integer.parseInt(getTxtCoordX());
-						//int j=Integer.parseInt(getTxtCoordY());
+					
 						setOk(true);
 						dispose();
 						}

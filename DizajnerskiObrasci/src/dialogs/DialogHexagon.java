@@ -195,16 +195,7 @@ public class DialogHexagon extends JDialog{
 					{
 						try
 						{
-						//System.out.println("this is radius hexagon");
-						//HexagonAdapter h= new HexagonAdapter(new Point(Integer.parseInt(getTxtCoordX()), Integer.parseInt(getTxtCoordY()))
-								//,Integer.parseInt(getTextRadius()),
-								//false
-								//,getColEdge(),
-								//getColInner());
-						//h.setHexagonRadius(Integer.parseInt(getTextRadius()));
-						//int i=Integer.parseInt(getTxtCoordX());
-						//int j=Integer.parseInt(getTxtCoordY());
-						//System.out.println("this" + h.getHexagonRadius());
+						
 
 						setOk(true);
 

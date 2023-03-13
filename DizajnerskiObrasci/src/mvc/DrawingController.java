@@ -2,12 +2,17 @@ package mvc;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.IOException;
+import java.io.NotSerializableException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Stack;
 
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import adapter.HexagonAdapter;
 import command.CmdModifyPoint;
@@ -33,6 +38,9 @@ import geometry.Line;
 import geometry.Point;
 import geometry.Rectangle;
 import geometry.Shape;
+import strategy.SaveLog;
+import strategy.SaveManager;
+import strategy.SavePainting;
 
 public class DrawingController {
 	private DrawingModel model;
@@ -123,7 +131,6 @@ public class DrawingController {
 			undoCounter++;
 			undoStack.push(command);
 			redoStack.clear();
-			//model.add(p);
 		}
 		else if(frame.getTglbtnLine())
 		{
@@ -148,7 +155,6 @@ public class DrawingController {
 			undoCounter++;
 			undoStack.push(command);
 			redoStack.clear();
-			//model.add(l);
 			startPoint=null;
 			}
 		}
@@ -159,10 +165,8 @@ public class DrawingController {
 			DialogHexagon dija=new DialogHexagon();
 			dija.setTxtCoordX(Integer.toString(p.getX()));
 			dija.setTxtCoordY(Integer.toString(p.getY()));
-			//dija.setRadius(dija.getTextRadius());
 			dija.setTxtCoordXEdt(false);
 			dija.setTxtCoordYEdt(false);
-			//dija.setEnabled(false);
 			dija.setVisible(true);
 			if(dija.isOk()) {
 			try {
@@ -184,7 +188,6 @@ public class DrawingController {
 			undoCounter++;
 			undoStack.push(command);
 			redoStack.clear();
-			//model.add(h);
 			}
 			catch(NumberFormatException ex)
 			{
@@ -218,7 +221,6 @@ public class DrawingController {
 			undoCounter++;
 			undoStack.push(command);
 			redoStack.clear();
-			//model.add(rct);
 			}
 			catch(NumberFormatException ex)
 			{
@@ -253,7 +255,6 @@ public class DrawingController {
 				undoCounter++;
 				undoStack.push(command);
 				redoStack.clear();
-				//model.add(circle);
 			
 			}
 			}
@@ -290,7 +291,6 @@ public class DrawingController {
 				undoCounter++;
 				undoStack.push(command);
 				redoStack.clear();
-				//model.add(donut);
 			}
 			}
 			catch(NumberFormatException ex)
@@ -318,16 +318,10 @@ public class DrawingController {
     	if(getTestShape()!=null)
 		{
 			Shape pomShape=getTestShape();
-			//ArrayList<Shape> list=getShape();
-			//int index=list.indexOf(pomShape);
-			//model.add(pomShape);
-			//System.out.println(pomShape);
-			
-
+	
 
 		if(getTestShape() instanceof Point)
 		{
-			//System.out.println(getTestShape() instanceof Point);
 			Point oldPoint = (Point) getTestShape();
 
 			DialogPoint mt=new DialogPoint();
@@ -349,22 +343,7 @@ public class DrawingController {
 			undoCounter++;
 			redoStack.clear();
 			
-			/*((Point) pomShape).setX(Integer.parseInt(mt.getTxtX()));
-			((Point) pomShape).setY(Integer.parseInt(mt.getTxtY()));
-			((Point) pomShape).setCol(mt.getColor());*/
-			
-			
-			
-			
-			
-			//breaks here
-			//model.add(pomShape);
-			//setTestShape(pomShape);
-			
-			//setShape(list);
-			
-			//frame.repaint();
-			
+		
 			
 			}
 			
@@ -379,7 +358,6 @@ public class DrawingController {
 		{
 			Line oldLine = (Line) getTestShape();
 			
-			//System.out.println("asfs" + oldLine.toString());
 			
 			
 			
@@ -403,32 +381,16 @@ public class DrawingController {
 						ml.getCol()
 						
 						);
-				//System.out.println("this" + oldLine.toString());
-				//System.out.println("this" + newLine.toString());
-
+				
 				
 				command = new CmdModifyLine(oldLine, newLine);
-				//System.out.println("breaks");
 				command.execute();
 				
 				frame.getTextArea().append(command.toString());
 				undoStack.push(command);
 				undoCounter++;
 				redoStack.clear();
-				
-				//((Line)pomShape).setStartPoint(new Point((Integer.parseInt(ml.getTxtStartCoordX())),(Integer.parseInt(ml.getTxtStartCoordY()))));
-				//((Line)pomShape).setEndPoint(new Point((Integer.parseInt(ml.getTxtEndCoordX())),(Integer.parseInt(ml.getTxtEndCoordY()))));
-				//((Line)pomShape).setCol(ml.getCol());
-				//model.add(pomShape);
-				
-				
-				
-				//list.set(index,pomShape);
-				//setShape(list);
-				
-				
-				//setTestShape(pomShape);
-				//frame.repaint();
+			
 			}
 			}
 			catch(Exception ex)
@@ -470,16 +432,7 @@ public class DrawingController {
 				undoCounter++;
 				undoStack.push(command);
 				redoStack.clear();
-				//((Rectangle)pomShape).setUpperLeftPoint(new Point(Integer.parseInt(dp.getTxtXCoordinate()),Integer.parseInt(dp.getTxtYCoordinate())));
-				//((Rectangle)pomShape).setHeight(Integer.parseInt(dp.getTxtHeight()));
-				//((Rectangle)pomShape).setWidth(Integer.parseInt(dp.getTxtWidth()));
-				//((Rectangle)pomShape).setEdgeColor(dp.getEdgeColor());
-				//((Rectangle)pomShape).setInnerColor(dp.getInnerColor());
-				//list.set(index,pomShape);
-				//model.add(pomShape);
-				//setShape(list);
-				//setTestShape(pomShape);
-				//frame.repaint();
+			
 			}
 			}
 			catch(NumberFormatException ex)
@@ -503,7 +456,6 @@ public class DrawingController {
 			dh.setColInner(((HexagonAdapter)pomShape).getHexagonInnerColor());
 			dh.setColEdge(((HexagonAdapter)pomShape).getHexagonBorderColor());
 			dh.setVisible(true);
-			//System.out.println("this is length" + dh.getTextRadius());
 			try
 			{
 			if(dh.isOk())
@@ -524,18 +476,7 @@ public class DrawingController {
 				undoCounter++;
 				undoStack.push(command);
 				redoStack.clear();
-				
-//				((HexagonAdapter)pomShape).setHexagonCenter(new Point(Integer.parseInt(dh.getTxtCoordX()), Integer.parseInt(dh.getTxtCoordY())));
-//				((HexagonAdapter)pomShape).setHexagonRadius(Integer.parseInt(dh.getTextRadius()));
-//				((HexagonAdapter)pomShape).setHexagonBorderColor(dh.getColEdge());
-//				((HexagonAdapter)pomShape).setHexagonInnerColor(dh.getColInner());
-//				//list.set(index,pomShape);
-//				model.add(pomShape);
-//				//setShape(list);
-//				setTestShape(pomShape);
-//				
-//				frame.repaint();
-				
+
 			}
 			}
 			catch(NumberFormatException ex)
@@ -582,18 +523,7 @@ public class DrawingController {
 				undoStack.push(command);
 				redoStack.clear();
 				
-				
-//				((Donut)pomShape).setCenter(new Point(Integer.parseInt(dk.getTxtCoordX()),Integer.parseInt(dk.getTxtCoordY())));
-//				((Donut)pomShape).setInnerRadius(Integer.parseInt(dk.getTxtInner()));
-//				((Donut)pomShape).setRadius(Integer.parseInt(dk.getTxtEdge()));
-//				((Donut)pomShape).setColEdge(dk.getColEdge());
-//				((Donut)pomShape).setColSmallerEdge(dk.getColEdge());
-//				((Donut)pomShape).setColInner(dk.getColInner());
-//				//list.set(index,pomShape);
-//				model.add(pomShape);
-//				//setShape(list);
-//				setTestShape(pomShape);
-//				frame.repaint();
+
 			}
 			}
 			catch(NumberFormatException e)
@@ -636,18 +566,7 @@ public class DrawingController {
 				undoCounter++;
 				undoStack.push(command);
 				redoStack.clear();
-				
-//				((Circle)pomShape).setCenter(new Point(Integer.parseInt(dk.getTxtCoordX()),Integer.parseInt(dk.getTxtCoordY())));
-//				((Circle)pomShape).setRadius(Integer.parseInt(dk.getTextDiametar()));
-//				((Circle)pomShape).setColEdge(dk.getColEdge());
-//				((Circle)pomShape).setColInner(dk.getColInner());
-//				//list.set(index,pomShape);
-//				model.add(pomShape);
-//				//setShape(list);
-//				setTestShape(pomShape);
-//				//System.out.println("this is length" + list.isEmpty());
-//				frame.repaint();
-				
+		
 			}
 			}
 			catch(NumberFormatException ex)
@@ -692,27 +611,7 @@ public class DrawingController {
 		}
     	
     	
-    	
-    	/*if(getTestShape()!=null)
-		{
-			Shape pomShape=getTestShape();
-			ArrayList<Shape> list=getShape();
-			//int index=list.indexOf(pomShape);
-			//System.out.println("this is length" + list.isEmpty());
-			if(JOptionPane.showConfirmDialog(new JFrame(), "Are you sure you want to delete selected shape?","Check",JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION)
-			{
-				model.remove(pomShape);
-				setTestShape(null); 
-				setShape(list);
-				
-				frame.repaint();
-			}
-		}
-		else
-		{
-			setStartPoint(null);
-			JOptionPane.showMessageDialog(new JFrame(), "No shape selected", "Error!", JOptionPane.WARNING_MESSAGE);
-		}*/
+    
 
 	}
 
@@ -738,6 +637,82 @@ public class DrawingController {
 	{
 		this.startPoint=p;
 	}
+	public void saveLog() {
+		JFileChooser fileChooser = new JFileChooser();
+		fileChooser.setDialogTitle("Save Log");
+		
+		
+		FileNameExtensionFilter fileNameExtensionFilter = new FileNameExtensionFilter(".txt", "txt");
+		fileChooser.setAcceptAllFileFilterUsed(false);
+		fileChooser.setFileFilter(fileNameExtensionFilter);
+
+		if (fileChooser.showSaveDialog(frame.getParent()) == JFileChooser.APPROVE_OPTION) {
+			
+			
+			File file = fileChooser.getSelectedFile();
+			
+			String filePath = file.getAbsolutePath();
+			
+			File log = new File(filePath + ".txt");
+
+			SaveManager manager = new SaveManager(new SaveLog());
+			manager.save(frame, log);
+			
+			System.out.println(fileChooser.getSelectedFile().getName() + "log successfully saved " + " file!");
+		}
+		frame.getView().repaint();
+	}
+	
+	
+	
+	public void savePainting() throws IOException, NotSerializableException {
+		JFileChooser fileChooser = new JFileChooser();
+		fileChooser.setDialogTitle("Save Painting");
+		
+		fileChooser.setAcceptAllFileFilterUsed(false);
+		
+		FileNameExtensionFilter filter = new FileNameExtensionFilter(".bin", "bin");
+		fileChooser.setFileFilter(filter);
+
+		int selection = fileChooser.showSaveDialog(null);
+
+		if (selection == JFileChooser.APPROVE_OPTION) {
+			File log;
+			
+			File painting = fileChooser.getSelectedFile();
+			
+			
+			
+			String filePath = painting.getAbsolutePath();
+			if (!filePath.contains(".") && !filePath.endsWith(".bin")) {
+				log = new File(filePath + ".txt");
+				
+				painting = new File(filePath + ".bin");
+				
+			}
+
+			String fileName = painting.getPath();
+			
+			
+			if (fileName.substring(fileName.lastIndexOf("."), fileName.length()).contains(".bin")) {
+				fileName = painting.getAbsolutePath().substring(0, fileName.lastIndexOf(".")) + ".txt";
+				
+				SaveManager savePainting = new SaveManager(new SavePainting());
+				SaveManager saveLog = new SaveManager(new SaveLog());
+				
+				log = new File(fileName);
+				
+				savePainting.save(model, painting);
+				saveLog.save(frame, log);
+				
+				System.out.println("Painting saved, location: " + painting.getAbsolutePath());
+				
+			} else {
+				JOptionPane.showMessageDialog(null, "Wrong file extension!");
+			}
+		}
+	}
+	
 
 	public void undoRedoButtons() {
 		if (undoCounter < 1) {
