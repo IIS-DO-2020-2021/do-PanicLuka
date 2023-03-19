@@ -106,6 +106,6 @@ public class Line extends Shape {
 
 	@Override
 	public String toString() {
-		return startPoint + "-->" + endPoint + col;
+		return "Line --> (" + startPoint.getX() + ", " + startPoint.getY() + ")" + "(" + endPoint.getX() + ", " + endPoint.getY() + ")" + " color: ("  +Integer.toString(getCol().getRGB()) + ")";
 	}
 }

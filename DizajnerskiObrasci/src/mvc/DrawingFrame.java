@@ -59,6 +59,12 @@ public class DrawingFrame extends JFrame {
 	JToggleButton tglbtnUndo;
 	JButton btnSavePainting;
 	JButton btnSaveLog;
+	JButton btnLoadNext;
+	JButton btnOpenPainting;
+	JButton btnOpenLog;
+	 
+
+	
 	
 	private JScrollPane scrollPane;
 	private JTextArea textArea;
@@ -253,6 +259,67 @@ public class DrawingFrame extends JFrame {
 		toolBar.add(btnSaveLog);
 		
 		
+		btnLoadNext = new JButton("Load Next");
+		
+
+		btnLoadNext.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				try {
+					controller.loadNext();
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
+			}
+		});
+		group.add(btnLoadNext);
+		btnLoadNext.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		toolBar.add(btnLoadNext);
+		
+		
+		btnOpenLog = new JButton("Open Log");
+		
+
+		btnOpenLog.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				try {
+					controller.openLog();
+				} catch (IOException e1) {
+					
+					e1.printStackTrace();
+				}
+			}
+		});
+		group.add(btnOpenLog);
+		btnOpenLog.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		toolBar.add(btnOpenLog);
+		
+		
+		btnOpenPainting = new JButton("Open Painting");
+		
+
+		btnOpenPainting.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				try {
+					controller.openPainting();
+				} catch (ClassNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
+		group.add(btnOpenPainting);
+		btnOpenPainting.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		toolBar.add(btnOpenPainting);
+		
+		
+		
+		
 		
 		
 		JPanel panelLog = new JPanel();
@@ -362,6 +429,9 @@ public class DrawingFrame extends JFrame {
 	public JToggleButton getBtnRedo() {
 		return tglbtnRedo;
 	}
+	public void setTglBtnPoint() {
+		
+	}
 	
 	public void setBtnRedo(JToggleButton tglbtnRedo) {
 		this.tglbtnRedo = tglbtnRedo; 
@@ -375,5 +445,57 @@ public class DrawingFrame extends JFrame {
 		return textArea;
 	}
 	
+	
+	public JToggleButton getTglBtnPoint() {
+		return tglbtnPoint;
+	}
+
+	public void setTglBtnPoint(JToggleButton tglBtnPoint) {
+		this.tglbtnPoint = tglBtnPoint;
+	}
+
+	public JToggleButton getTglBtnLine() {
+		return tglbtnLine;
+	}
+
+	public void setTglBtnLine(JToggleButton tglBtnLine) {
+		this.tglbtnLine = tglBtnLine;
+	}
+
+	public JToggleButton getTglBtnCircle() {
+		return tglbtnCircle;
+	}
+
+	public void setTglBtnCircle(JToggleButton tglBtnCircle) {
+		this.tglbtnCircle = tglBtnCircle;
+	}
+
+	public JToggleButton getTglBtnDonut() {
+		return tglbtnCirclewithHole;
+	}
+
+	public void setTglBtnDonut(JToggleButton tglBtnDonut) {
+		this.tglbtnCirclewithHole = tglBtnDonut;
+	}
+
+	public JToggleButton getTglBtnRectangle() {
+		return tglbtnRectangle;
+	}
+
+	public void setTglBtnRectangle(JToggleButton tglBtnRectangle) {
+		this.tglbtnRectangle = tglBtnRectangle;
+	}
+
+	public JToggleButton getTglBtnHexagon() {
+		return tglbtnHexagon;
+	}
+
+	public void setTglBtnHexagon(JToggleButton tglBtnHexagon) {
+		this.tglbtnHexagon = tglBtnHexagon;
+	}
+	
+	public JButton getBtnLoadNext() {
+		return btnLoadNext;
+	}
 
 }

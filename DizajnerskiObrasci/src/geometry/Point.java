@@ -21,6 +21,13 @@ public class Point extends Shape {
 	public Point(int x, int y, boolean selected) {
 		this(x, y);
 		setSelected(selected);
+		
+		
+	}
+	
+	public Point(int x, int y, Color color) {
+		this(x, y);
+		setCol(color);
 	}
 	public Point(int x, int y, boolean selected, Color color) {
 		this(x, y, selected);
@@ -32,7 +39,7 @@ public class Point extends Shape {
 		if(this.col!=null)
 			g.setColor(col);
 		else
-			g.setColor(Color.BLACK);
+			g.setColor(col);
 		g.drawLine(this.x-2, this.y, this.x+2, this.y);
 		g.drawLine(this.x, this.y-2, this.x, this.y+2);
 		g.setColor(Color.BLACK);
@@ -96,6 +103,6 @@ public class Point extends Shape {
 
 	@Override
 	public String toString() {
-		return "(" + x + ", " + y + ")";
+		return "Point --> " +  "(" + x + ", " + y + ") " + "color: (" +Integer.toString(getCol().getRGB())+")" ;
 	}
 }

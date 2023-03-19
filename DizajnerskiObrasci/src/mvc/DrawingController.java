@@ -1,10 +1,19 @@
 package mvc;
 
+import java.awt.Color;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.BufferedReader;
+import java.io.EOFException;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InvalidClassException;
 import java.io.NotSerializableException;
+import java.io.ObjectInputStream;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Stack;
@@ -58,7 +67,12 @@ public class DrawingController {
 	
 	private int undoCounter = 0;
 	private int redoCounter = 0;
+	
+	private int logCounter = 0;
 
+	
+
+	private ArrayList<String> logList = new ArrayList<String>();
 	
 
     public DrawingController(DrawingModel model, DrawingFrame frame) {
@@ -117,17 +131,19 @@ public class DrawingController {
 		frame.repaint();
 		
 		if(frame.getTglbtnPoint()) {
-			Point p=new Point(e.getX(),e.getY());
-			command = new CmdAddShape(model, p);
-			command.execute();
-			frame.getTextArea().append(command.toString());
+			
 			DialogPoint dp=new DialogPoint();
 			dp.setTbXEdt(false);
 			dp.setTxtYEdt(false);
-			dp.setTxtX(Integer.toString(p.getX()));
-			dp.setTxtY(Integer.toString(p.getY()));
+			dp.setTxtX(Integer.toString(e.getX()));
+			dp.setTxtY(Integer.toString(e.getY()));
 			dp.setVisible(true);
-			p.setCol(dp.getColor());
+			//p.setCol(dp.getColor());
+			
+			Point p=new Point(e.getX(),e.getY(), dp.getColor());
+			command = new CmdAddShape(model, p);
+			command.execute();
+			frame.getTextArea().append(command.toString());
 			undoCounter++;
 			undoStack.push(command);
 			redoStack.clear();
@@ -137,21 +153,23 @@ public class DrawingController {
 			if(startPoint==null)
 			startPoint=new Point(e.getX(),e.getY());
 			else {
-			Line l=new Line(startPoint,new Point(e.getX(),e.getY()));
-			command = new CmdAddShape(model, l);
-			command.execute();
-			frame.getTextArea().append(command.toString());
+			
 			DialogLine dl=new DialogLine();
 			dl.setTxtEndCoordXEdt(false);
 			dl.setTxtEndCoordYEdt(false);
 			dl.setTxtStartCoordXEdt(false);
 			dl.setTxtStartCoordYEdt(false);
-			dl.setTxtStartCoordX(Integer.toString(l.getStartPoint().getX()));
-			dl.setTxtStartCoordY(Integer.toString(l.getStartPoint().getY()));
-			dl.setTxtEndCoordX(Integer.toString(l.getEndPoint().getX()));
-			dl.setTxtEndCoordY(Integer.toString(l.getEndPoint().getY()));
+			dl.setTxtStartCoordX(Integer.toString(startPoint.getX()));
+			dl.setTxtStartCoordY(Integer.toString(startPoint.getY()));
+			dl.setTxtEndCoordX(Integer.toString(e.getX()));
+			dl.setTxtEndCoordY(Integer.toString(e.getY()));
 			dl.setVisible(true);
-			l.setCol(dl.getCol());
+			
+			Line l=new Line(startPoint,new Point(e.getX(),e.getY()), dl.getCol());
+			command = new CmdAddShape(model, l);
+			command.execute();
+			frame.getTextArea().append(command.toString());
+			//l.setCol(dl.getCol());
 			undoCounter++;
 			undoStack.push(command);
 			redoStack.clear();
@@ -212,12 +230,13 @@ public class DrawingController {
 			try {
 			int width=Integer.parseInt(dija.getTxtWidth());
 			int height=Integer.parseInt(dija.getTxtHeight());
-			Rectangle rct=new Rectangle(p,width,height);
+			Rectangle rct=new Rectangle(p,height,width);
+			rct.setEdgeColor(dija.getEdgeColor());
+			rct.setInnerColor(dija.getInnerColor());
 			command = new CmdAddShape(model, rct);
 			command.execute();
 			frame.getTextArea().append(command.toString());
-			rct.setEdgeColor(dija.getEdgeColor());
-			rct.setInnerColor(dija.getEdgeColor());
+			
 			undoCounter++;
 			undoStack.push(command);
 			redoStack.clear();
@@ -247,11 +266,13 @@ public class DrawingController {
 			{
 				int radius=Integer.parseInt(dija.getTextDiametar());
 				Circle circle=new Circle(center,radius);
+				
+				circle.setColEdge(dija.getColEdge());
+				circle.setColInner(dija.getColInner());
+				
 				command = new CmdAddShape(model, circle);
 				command.execute();
 				frame.getTextArea().append(command.toString());
-				circle.setColEdge(dija.getColEdge());
-				circle.setColInner(dija.getColInner());
 				undoCounter++;
 				undoStack.push(command);
 				redoStack.clear();
@@ -282,12 +303,14 @@ public class DrawingController {
 				int innerRadius=Integer.parseInt(dija.getTxtInner());
 				int outerRadius=Integer.parseInt(dija.getTxtEdge());
 				Donut donut=new Donut(center,outerRadius,innerRadius);
-				command = new CmdAddShape(model, donut);
-				command.execute();
-				frame.getTextArea().append(command.toString());
+				
 				donut.setColEdge(dija.getColEdge());
 				donut.setColSmallerEdge(dija.getColEdge());
 				donut.setColInner(dija.getColInner());
+				
+				command = new CmdAddShape(model, donut);
+				command.execute();
+				frame.getTextArea().append(command.toString());
 				undoCounter++;
 				undoStack.push(command);
 				redoStack.clear();
@@ -418,8 +441,8 @@ public class DrawingController {
 				Rectangle newRectangle = new Rectangle(
 						new Point(Integer.parseInt(dp.getTxtXCoordinate()),
 								Integer.parseInt(dp.getTxtYCoordinate())),
-								Integer.parseInt(dp.getTxtWidth()),
 								Integer.parseInt(dp.getTxtHeight()),
+								Integer.parseInt(dp.getTxtWidth()),
 								true,
 								dp.getEdgeColor(),
 								dp.getInnerColor()
@@ -599,6 +622,8 @@ public class DrawingController {
     		shapes.remove(shape);
     		undoShapes.add(shape);
     		undoStack.push(command);
+    		
+    		
     		undoCounter++;
     		
     	}
@@ -713,6 +738,689 @@ public class DrawingController {
 		}
 	}
 	
+	public void openPainting() throws IOException, ClassNotFoundException {
+		
+		JFileChooser fileChooser = new JFileChooser();
+		fileChooser.setAcceptAllFileFilterUsed(false);
+		
+		FileNameExtensionFilter extensionFilter = new FileNameExtensionFilter(".bin", "bin");
+		fileChooser.setAcceptAllFileFilterUsed(false);
+		fileChooser.setFileFilter(extensionFilter);
+
+		fileChooser.setDialogTitle("Open Painting");
+		int userSelection = fileChooser.showOpenDialog(null);
+
+		if (userSelection == JFileChooser.APPROVE_OPTION) {
+			
+			File loadingPainting = fileChooser.getSelectedFile();
+			
+			loadPainting(loadingPainting);
+
+		}
+	}
+	
+	public void loadPainting(File paintingToLoad) throws FileNotFoundException, IOException, ClassNotFoundException {
+		frame.getTextArea().setText("");
+
+		File file = new File(paintingToLoad.getAbsolutePath().replace("bin", "txt"));
+
+		if (file.length() == 0) {
+			System.out.println("\"" + paintingToLoad.getName() + "\" file is empty!");
+			return;
+		}
+
+		BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
+		String logLine;
+
+		while ((logLine = bufferedReader.readLine()) != null) {
+			frame.getTextArea().append(logLine + "\n");
+		}
+		bufferedReader.close();
+
+		ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(paintingToLoad));
+		try {
+
+			model.getShapes().addAll((ArrayList<Shape>) objectInputStream.readObject());
+			objectInputStream.close();
+
+		} catch (InvalidClassException ice) {
+			ice.printStackTrace();
+		} catch (SocketTimeoutException ste) {
+			ste.printStackTrace();
+		} catch (EOFException eofe) {
+			eofe.printStackTrace();
+		} catch (IOException exc) {
+			exc.printStackTrace();
+		}
+		frame.getView().repaint();
+	}
+	
+	public void openLog() throws IOException {
+		JFileChooser fileChooser = new JFileChooser();
+		fileChooser.setDialogTitle("Open log");
+		FileNameExtensionFilter fileNameExtensionFilter = new FileNameExtensionFilter(".txt", "txt");
+		fileChooser.setAcceptAllFileFilterUsed(false);
+		fileChooser.setFileFilter(fileNameExtensionFilter);
+
+		int userSelection = fileChooser.showOpenDialog(null);
+
+		if (userSelection == JFileChooser.APPROVE_OPTION) {
+			File logToLoad = fileChooser.getSelectedFile();
+			loadLog(logToLoad);
+		}
+	}
+	
+	
+	public void loadLog(File logToLoad) throws IOException {
+		try {
+			frame.getTextArea().setText("");
+			if (logToLoad.length() == 0) {
+				System.out.println("\"" + logToLoad.getName() + "\" file is empty");
+				return;
+			}
+			BufferedReader br = new BufferedReader(new FileReader(logToLoad));
+			String stringLine;
+			
+			
+			while ((stringLine = br.readLine()) != null) {
+				logList.add(stringLine);
+			}
+			br.close();
+			frame.getTglBtnPoint().setEnabled(false);
+			frame.getTglBtnLine().setEnabled(false);
+			frame.getTglBtnDonut().setEnabled(false);
+			frame.getTglBtnCircle().setEnabled(false);
+			frame.getTglBtnHexagon().setEnabled(false);
+			frame.getBtnUndo().setEnabled(false);
+			frame.getTglBtnRectangle().setEnabled(false);
+			frame.getBtnLoadNext().setEnabled(true);
+
+		} catch (Exception e) {
+			System.err.println("There has been an error: " + e.getMessage());
+		}
+	}
+	
+	
+	
+	
+	
+	public void loadNext () throws Exception {
+		Shape shape = null;
+		
+		if (logCounter < logList.size()) {
+			String row = logList.get(logCounter);
+			
+			if (row.contains("Point")) {
+				int x = Integer.parseInt(row.substring(findIndexOf(1, '(', row) + 1, findIndexOf(1, ',', row)));
+				int y = Integer.parseInt(row.substring(findIndexOf(1, ',', row) + 2, findIndexOf(1, ')', row)));
+				int edgeColor = Integer.parseInt(row.substring(findIndexOf(2, '(', row) + 1, findIndexOf(2, ')', row)));
+				shape = new Point(x, y, new Color(edgeColor));
+			} else if (row.contains("Line")) {
+				int startPointX = Integer.parseInt(row.substring(findIndexOf(1, '(', row) + 1, findIndexOf(1,',', row)));
+				int startPointY = Integer.parseInt(row.substring(findIndexOf(1, ',', row) + 2, findIndexOf(1, ')', row)));
+				int endPointX = Integer.parseInt(row.substring(findIndexOf(2, '(', row) + 1, findIndexOf(2, ',', row)));
+				int endPointY = Integer.parseInt(row.substring(findIndexOf(2, ',', row) + 2, findIndexOf(2, ')', row)));
+				int color = Integer.parseInt(row.substring(findIndexOf(3, '(', row) + 1, findIndexOf(3, ')', row)));
+				shape = new Line(new Point(startPointX, startPointY), new Point(endPointX, endPointY), new Color(color));
+			} else if (row.contains("Rectangle")) {
+				int upperLeftPointX = Integer.parseInt(row.substring(findIndexOf(1, '(', row) + 1, findIndexOf(1, ',', row)));
+				int upperLeftPointY = Integer.parseInt(row.substring(findIndexOf(1, ',', row) + 2, findIndexOf(1, ')', row)));
+				int height = Integer.parseInt(row.substring(findIndexOf(2, '=', row) + 1, findIndexOf(3, ',', row)));
+				int width = Integer.parseInt(row.substring(findIndexOf(3, '=', row) + 1, findIndexOf(4, ',', row)));
+				int innerColor = Integer.parseInt(row.substring(findIndexOf(2, '(', row) + 1, findIndexOf(2, ')', row)));
+				int edgeColor = Integer.parseInt(row.substring(findIndexOf(3, '(', row) + 1, findIndexOf(3, ')', row)));
+				shape = new Rectangle(new Point(upperLeftPointX, upperLeftPointY), height, width, new Color(edgeColor), new Color(innerColor));
+			} else if (row.contains("Circle")) {
+				int centerX = Integer.parseInt(row.substring(findIndexOf(1, '(', row) + 1, findIndexOf(1, ',', row)));
+				int centerY = Integer.parseInt(row.substring(findIndexOf(1, ',', row) + 2, findIndexOf(1, ')', row)));
+				int radius =  Integer.parseInt(row.substring(findIndexOf(2, '=', row) + 1, findIndexOf(3, ',', row)));
+				int innerColor = Integer.parseInt(row.substring(findIndexOf(2, '(', row) + 1, findIndexOf(2, ')', row)));
+				int edgeColor = Integer.parseInt(row.substring(findIndexOf(3, '(', row) + 1, findIndexOf(3, ')', row)));
+				shape = new Circle(new Point(centerX, centerY), radius, new Color(edgeColor), new Color(innerColor));	
+			} else if (row.contains("Donut")) {
+				int centerX = Integer.parseInt(row.substring(findIndexOf(1, '(', row) + 1, findIndexOf(1, ',', row)));
+				int centerY = Integer.parseInt(row.substring(findIndexOf(1, ',', row) + 2, findIndexOf(1, ')', row)));
+				int radius = Integer.parseInt(row.substring(findIndexOf(1, '=', row) + 2, findIndexOf(3, ',', row)));
+				int innerRadius = Integer.parseInt(row.substring(findIndexOf(2, '=', row) + 1, findIndexOf(4, ',', row)));
+				int innerColor = Integer.parseInt(row.substring(findIndexOf(2, '(', row) + 1, findIndexOf(2, ')', row)));
+				int edgeColor = Integer.parseInt(row.substring(findIndexOf(3, '(', row) + 1, findIndexOf(3, ')', row)));
+				shape = new Donut(new Point(centerX, centerY), radius, innerRadius, new Color(edgeColor), new Color(innerColor));
+			} else if (row.contains("Hexagon")) {
+				int centerX = Integer.parseInt(row.substring(findIndexOf(1, '(', row) + 1, findIndexOf(1, ',', row)));
+				int centerY = Integer.parseInt(row.substring(findIndexOf(1, ',', row) + 2, findIndexOf(1, ')', row)));
+				int radius = Integer.parseInt(row.substring(findIndexOf(1, '=', row) + 1, findIndexOf(3, ',', row)));
+				int color = Integer.parseInt(row.substring(findIndexOf(2, '(', row) + 1, findIndexOf(2, ')', row)));
+				int innerColor = Integer.parseInt(row.substring(findIndexOf(3, '(', row) + 1, findIndexOf(3, ')', row)));
+				shape = new HexagonAdapter(new Point(centerX, centerY), radius, new Color(color), new Color(innerColor));
+			}
+			
+			if (row.contains("Added")) {
+				CmdAddShape cmdAddShape;
+				
+				if(row.contains("Undo")) {
+					cmdAddShape = (CmdAddShape) undoStack.peek();
+					cmdAddShape.unexecute();
+					undoStack.pop();
+					redoStack.push(cmdAddShape);
+					frame.getTextArea().append("Undo " + cmdAddShape.toString());
+				} else if (row.contains("Redo")) {
+					cmdAddShape = (CmdAddShape) redoStack.peek();
+					cmdAddShape.execute();
+					redoStack.pop();
+					undoStack.push(cmdAddShape);
+					frame.getTextArea().append("Redo " + cmdAddShape.toString());
+				} else {
+					cmdAddShape = new CmdAddShape(model, shape);
+					cmdAddShape.execute();
+					undoStack.push(cmdAddShape);
+					redoStack.clear();
+					frame.getTextArea().append(cmdAddShape.toString());
+				}
+			}
+			if (row.contains("Selected")) {
+				CmdSelectShape cmdSelectShape;
+				
+				if(row.contains("Undo")) {
+					cmdSelectShape = (CmdSelectShape) undoStack.peek();
+					cmdSelectShape.unexecute();
+					undoStack.pop();
+					redoStack.push(cmdSelectShape);
+					frame.getTextArea().append("Undo " + cmdSelectShape.toString());
+				} else if (row.contains("Redo")){
+					cmdSelectShape = (CmdSelectShape) redoStack.peek();
+					cmdSelectShape.execute();
+					redoStack.pop();
+					undoStack.push(cmdSelectShape);
+					frame.getTextArea().append("Redo " + cmdSelectShape.toString());
+				} else {
+					//System.out.println(model.getShapes().indexOf(shape));
+					if(row.contains("Hexagon")) {
+						shape = model.getShapes().get(model.getShapes().indexOf(shape));
+					}else {
+						shape = model.getShapes().get(model.getShapes().indexOf(shape) + 1);
+					}
+					
+					
+					cmdSelectShape = new CmdSelectShape(this, shape);
+					cmdSelectShape.execute();
+					undoStack.push(cmdSelectShape);
+					redoStack.clear();
+					frame.getTextArea().append(cmdSelectShape.toString());
+				} 
+			
+			}else if (row.contains("Modified")) {
+				if (shape instanceof Point) {
+					CmdModifyPoint cmdModifyPoint;
+					
+					if(row.contains("Undo")) {
+						cmdModifyPoint = (CmdModifyPoint) undoStack.peek();
+						cmdModifyPoint.unexecute();
+						undoStack.pop();
+						redoStack.push(cmdModifyPoint);
+						frame.getTextArea().append("Undo " + cmdModifyPoint.toString());
+					} else if (row.contains("Redo")) {
+						cmdModifyPoint = (CmdModifyPoint) redoStack.peek();
+						cmdModifyPoint.execute(); 
+						redoStack.pop();
+						undoStack.push(cmdModifyPoint);
+						frame.getTextArea().append("Redo " + cmdModifyPoint.toString());
+					} else {
+						shape = shapes.get(0);
+						
+						//System.out.println(row);
+						Point newPoint = new Point();
+						
+						newPoint.setX(Integer.parseInt(row.substring(findIndexOf(3, '(', row) + 1, findIndexOf(2, ',', row))));
+						newPoint.setY(Integer.parseInt(row.substring(findIndexOf(2, ',', row) + 2, findIndexOf(3, ')', row))));
+						newPoint.setCol(new Color(Integer.parseInt(row.substring(findIndexOf(4, '(', row) + 1, findIndexOf(4, ')', row)))));
+
+						cmdModifyPoint = new CmdModifyPoint((Point) shape, newPoint);
+						cmdModifyPoint.execute();
+						undoStack.push(cmdModifyPoint);
+						redoStack.clear();
+						frame.getTextArea().append(cmdModifyPoint.toString());
+					}
+				} else if (shape instanceof Line) {
+					CmdModifyLine cmdModifyLine;
+					
+					if(row.contains("Undo")) {
+						cmdModifyLine = (CmdModifyLine) undoStack.peek();
+						cmdModifyLine.unexecute();
+						undoStack.pop();
+						redoStack.push(cmdModifyLine);
+						frame.getTextArea().append("Undo " + cmdModifyLine.toString());
+					} else if (row.contains("Redo")) {
+						cmdModifyLine = (CmdModifyLine) redoStack.peek();
+						cmdModifyLine.execute(); 
+						redoStack.pop();
+						undoStack.push(cmdModifyLine);
+						frame.getTextArea().append("Redo " + cmdModifyLine.toString());
+					} else {
+						shape = shapes.get(0);
+						Point newStartPoint = new Point();
+						Point newEndPoint = new Point();
+						
+						newStartPoint.setX(Integer.parseInt(row.substring(findIndexOf(4, '(', row) + 1, findIndexOf(3, ',', row))));
+						newStartPoint.setY(Integer.parseInt(row.substring(findIndexOf(3, ',', row) + 2, findIndexOf(4, ')', row))));
+						newEndPoint.setX(Integer.parseInt(row.substring(findIndexOf(5, '(', row) + 1, findIndexOf(4, ',', row))));
+						newEndPoint.setY(Integer.parseInt(row.substring(findIndexOf(4, ',', row) + 2, findIndexOf(5, ')', row))));
+						
+						Line newLine = new Line(newStartPoint, newEndPoint);
+						newLine.setCol(new Color(Integer.parseInt(row.substring(findIndexOf(6, '(', row) + 1, findIndexOf(6, ')', row)))));
+
+						cmdModifyLine = new CmdModifyLine((Line) shape, newLine);
+						cmdModifyLine.execute();
+						undoStack.push(cmdModifyLine);
+						redoStack.clear();
+						frame.getTextArea().append(cmdModifyLine.toString());
+					}
+				} else if (shape instanceof HexagonAdapter) {
+					CmdModifyHexagon cmdModifyHexagon;
+					
+					if(row.contains("Undo")) {
+						cmdModifyHexagon = (CmdModifyHexagon) undoStack.peek();
+						cmdModifyHexagon.unexecute(); 
+						undoStack.pop();
+						redoStack.push(cmdModifyHexagon);
+						frame.getTextArea().append("Undo " + cmdModifyHexagon.toString());
+					} else if (row.contains("Redo")) {
+						cmdModifyHexagon = (CmdModifyHexagon) redoStack.peek();
+						cmdModifyHexagon.execute(); 
+						redoStack.pop();
+						undoStack.push(cmdModifyHexagon);
+						frame.getTextArea().append("Redo " + cmdModifyHexagon.toString());
+					} else {
+						shape = shapes.get(0);
+						Point center = new Point();
+						int radius, edgeColor, innerColor;
+						
+						center.setX(Integer.parseInt(row.substring(findIndexOf(4, '(', row) + 1, findIndexOf(5, ',', row))));
+						center.setY(Integer.parseInt(row.substring(findIndexOf(5, ',', row) + 2, findIndexOf(4, ')', row))));
+						radius = (Integer.parseInt(row.substring(findIndexOf(2, '=', row) + 1, findIndexOf(7, ',', row))));
+						edgeColor = (Integer.parseInt(row.substring(findIndexOf(5, '(', row) + 1, findIndexOf(5, ')', row))));
+						innerColor = (Integer.parseInt(row.substring(findIndexOf(6, '(', row) + 1, findIndexOf(6, ')', row))));
+						
+						HexagonAdapter newHexagon = new HexagonAdapter(center, radius, new Color(edgeColor), new Color(innerColor));
+						
+						cmdModifyHexagon = new CmdModifyHexagon((HexagonAdapter) shape, newHexagon);
+						cmdModifyHexagon.execute();
+						undoStack.push(cmdModifyHexagon);
+						redoStack.clear();
+						frame.getTextArea().append(cmdModifyHexagon.toString());
+					}
+				} else if (shape instanceof Rectangle) {
+					CmdModifyRectangle cmdModifyRectangle;
+					
+					if (row.contains("Undo")) {
+						cmdModifyRectangle = (CmdModifyRectangle) undoStack.peek();
+						cmdModifyRectangle.unexecute();
+						undoStack.pop();
+						redoStack.push(cmdModifyRectangle);
+						frame.getTextArea().append(cmdModifyRectangle.toString());
+					} else if (row.contains("Redo")) {
+						cmdModifyRectangle = (CmdModifyRectangle) redoStack.peek();
+						cmdModifyRectangle.execute(); 
+						redoStack.pop();
+						undoStack.push(cmdModifyRectangle);
+						frame.getTextArea().append("Redo " + cmdModifyRectangle.toString());
+					} else {
+						shape = shapes.get(0);
+						Point upperLeftPoint = new Point();
+						int width, height, edgeColor, innerColor;
+						
+						upperLeftPoint.setX(Integer.parseInt(row.substring(findIndexOf(4, '(', row) + 1, findIndexOf(6, ',', row))));
+						upperLeftPoint.setY(Integer.parseInt(row.substring(findIndexOf(6, ',', row) + 2, findIndexOf(4, ')', row))));
+						
+						width = Integer.parseInt(row.substring(findIndexOf(8, '=', row) + 1, findIndexOf(9, ',', row)));
+						height = Integer.parseInt(row.substring(findIndexOf(7, '=', row) + 1, findIndexOf(8, ',', row)));
+						
+						edgeColor = Integer.parseInt(row.substring(findIndexOf(6, '(', row) + 1, findIndexOf(6, ')', row)));
+						innerColor = Integer.parseInt(row.substring(findIndexOf(5, '(', row) + 1, findIndexOf(5, ')', row)));						
+					
+						Rectangle newRectangle = new Rectangle(upperLeftPoint, height, width, new Color(edgeColor), new Color(innerColor));
+						
+						cmdModifyRectangle = new CmdModifyRectangle((Rectangle) shape, newRectangle);
+						cmdModifyRectangle.execute(); 
+						undoStack.push(cmdModifyRectangle);
+						redoStack.clear();
+						frame.getTextArea().append(cmdModifyRectangle.toString());
+					}
+				} else if (shape instanceof Donut) {
+					CmdModifyDonut cmdModifyDonut;
+					
+					if(row.contains("Undo")) {
+						cmdModifyDonut = (CmdModifyDonut) undoStack.peek();
+						cmdModifyDonut.unexecute(); 
+						undoStack.pop();
+						redoStack.push(cmdModifyDonut);
+						frame.getTextArea().append("Undo " + cmdModifyDonut.toString());
+					} else if (row.contains("Redo")) {
+						cmdModifyDonut = (CmdModifyDonut) redoStack.peek();
+						cmdModifyDonut.execute(); 
+						redoStack.pop();
+						undoStack.push(cmdModifyDonut);
+						frame.getTextArea().append("Redo " + cmdModifyDonut.toString());
+					} else {
+						shape = shapes.get(0);
+						Point center = new Point();
+						int radius, innerRadius, edgeColor, innerColor;
+						
+						center.setX(Integer.parseInt(row.substring(findIndexOf(4, '(', row) + 1, findIndexOf(6, ',', row))));
+						center.setY(Integer.parseInt(row.substring(findIndexOf(6, ',', row) + 2, findIndexOf(4, ')', row))));
+						
+						radius = Integer.parseInt(row.substring(findIndexOf(5, '=', row) + 2, findIndexOf(8, ',', row)));
+						innerRadius = Integer.parseInt(row.substring(findIndexOf(6, '=', row) + 1, findIndexOf(9, ',', row)));
+						
+						edgeColor = Integer.parseInt(row.substring(findIndexOf(6, '(', row) + 1, findIndexOf(6, ')', row)));
+						innerColor = Integer.parseInt(row.substring(findIndexOf(5, '(', row) + 1, findIndexOf(5, ')', row)));
+						
+						Donut newDonut = new Donut(center, radius, innerRadius, new Color(edgeColor), new Color(innerColor));
+						
+						cmdModifyDonut = new CmdModifyDonut((Donut) shape, newDonut);
+						cmdModifyDonut.execute(); 
+						undoStack.push(cmdModifyDonut);
+						redoStack.clear();
+						frame.getTextArea().append(cmdModifyDonut.toString());	
+					}
+				} else if (shape instanceof Circle) {
+					CmdModifyCircle cmdModifyCircle;
+					
+					if(row.contains("Undo")) {
+						cmdModifyCircle = (CmdModifyCircle) undoStack.peek();
+						cmdModifyCircle.unexecute(); 
+						undoStack.pop();
+						redoStack.push(cmdModifyCircle);
+						frame.getTextArea().append("Undo " + cmdModifyCircle.toString());
+					} else if (row.contains("Redo")) {
+						cmdModifyCircle = (CmdModifyCircle) redoStack.peek();
+						cmdModifyCircle.execute(); 
+						redoStack.pop();
+						undoStack.push(cmdModifyCircle);
+						frame.getTextArea().append("Redo " + cmdModifyCircle.toString());
+					} else {
+						shape = shapes.get(0);
+						Point center = new Point();
+						int radius, edgeColor, innerColor;
+						
+						center.setX(Integer.parseInt(row.substring(findIndexOf(4, '(', row) + 1, findIndexOf(5, ',', row))));
+						center.setY(Integer.parseInt(row.substring(findIndexOf(5, ',', row) + 2, findIndexOf(4, ')', row))));
+						radius = Integer.parseInt(row.substring(findIndexOf(6, '=', row) + 1, findIndexOf(7, ',', row)));
+						edgeColor = Integer.parseInt(row.substring(findIndexOf(6, '(', row) + 1, findIndexOf(6, ')', row)));
+						innerColor = Integer.parseInt(row.substring(findIndexOf(5, '(', row) + 1, findIndexOf(5, ')', row)));
+						
+						Circle newCircle = new Circle(center, radius, new Color(edgeColor), new Color(innerColor));
+						
+						cmdModifyCircle = new CmdModifyCircle((Circle) shape, newCircle);
+						cmdModifyCircle.execute(); 
+						
+						undoStack.push(cmdModifyCircle);
+						redoStack.clear();
+						frame.getTextArea().append(cmdModifyCircle.toString());
+					}
+				}
+			} else if (row.contains("Modified")) {
+				if (shape instanceof Point) {
+					CmdModifyPoint cmdModifyPoint;
+					
+					if(row.contains("Undo")) {
+						cmdModifyPoint = (CmdModifyPoint) undoStack.peek();
+						cmdModifyPoint.unexecute();
+						undoStack.pop();
+						redoStack.push(cmdModifyPoint);
+						frame.getTextArea().append("Undo " + cmdModifyPoint.toString());
+					} else if (row.contains("Redo")) {
+						cmdModifyPoint = (CmdModifyPoint) redoStack.peek();
+						cmdModifyPoint.execute(); 
+						redoStack.pop();
+						undoStack.push(cmdModifyPoint);
+						frame.getTextArea().append("Redo " + cmdModifyPoint.toString());
+					} else {
+						shape = shapes.get(0);
+						Point newPoint = new Point();
+						
+						newPoint.setX(Integer.parseInt(row.substring(findIndexOf(3, '(', row) + 1, findIndexOf(3, ',', row))));
+						newPoint.setY(Integer.parseInt(row.substring(findIndexOf(3, ',', row) + 2, findIndexOf(3, ')', row))));
+						newPoint.setCol(new Color(Integer.parseInt(row.substring(findIndexOf(4, '(', row) + 1, findIndexOf(4, ')', row)))));
+
+						cmdModifyPoint = new CmdModifyPoint((Point) shape, newPoint);
+						cmdModifyPoint.execute();
+						undoStack.push(cmdModifyPoint);
+						redoStack.clear();
+						frame.getTextArea().append(cmdModifyPoint.toString());
+					}
+				} else if (shape instanceof Line) {
+					CmdModifyLine cmdModifyLine;
+					
+					if(row.contains("Undo")) {
+						cmdModifyLine = (CmdModifyLine) undoStack.peek();
+						cmdModifyLine.unexecute();
+						undoStack.pop();
+						redoStack.push(cmdModifyLine);
+						frame.getTextArea().append("Undo " + cmdModifyLine.toString());
+					} else if (row.contains("Redo")) {
+						cmdModifyLine = (CmdModifyLine) redoStack.peek();
+						cmdModifyLine.execute(); 
+						redoStack.pop();
+						undoStack.push(cmdModifyLine);
+						frame.getTextArea().append("Redo " + cmdModifyLine.toString());
+					} else {
+						shape = shapes.get(0);
+						Point newStartPoint = new Point();
+						Point newEndPoint = new Point();
+						
+						newStartPoint.setX(Integer.parseInt(row.substring(findIndexOf(4, '(', row) + 1, findIndexOf(4, ',', row))));
+						newStartPoint.setY(Integer.parseInt(row.substring(findIndexOf(4, ',', row) + 2, findIndexOf(4, ')', row))));
+						newEndPoint.setX(Integer.parseInt(row.substring(findIndexOf(5, '(', row) + 1, findIndexOf(5, ',', row))));
+						newEndPoint.setY(Integer.parseInt(row.substring(findIndexOf(5, ',', row) + 2, findIndexOf(5, ')', row))));
+						
+						Line newLine = new Line(newStartPoint, newEndPoint);
+						newLine.setCol(new Color(Integer.parseInt(row.substring(findIndexOf(6, '(', row) + 1, findIndexOf(6, ')', row)))));
+
+						cmdModifyLine = new CmdModifyLine((Line) shape, newLine);
+						cmdModifyLine.execute();
+						undoStack.push(cmdModifyLine);
+						redoStack.clear();
+						frame.getTextArea().append(cmdModifyLine.toString());
+					}
+				} else if (shape instanceof HexagonAdapter) {
+					CmdModifyHexagon cmdModifyHexagon;
+					
+					if(row.contains("Undo")) {
+						cmdModifyHexagon = (CmdModifyHexagon) undoStack.peek();
+						cmdModifyHexagon.unexecute(); 
+						undoStack.pop();
+						redoStack.push(cmdModifyHexagon);
+						frame.getTextArea().append("Undo " + cmdModifyHexagon.toString());
+					} else if (row.contains("Redo")) {
+						cmdModifyHexagon = (CmdModifyHexagon) redoStack.peek();
+						cmdModifyHexagon.execute(); 
+						redoStack.pop();
+						undoStack.push(cmdModifyHexagon);
+						frame.getTextArea().append("Redo " + cmdModifyHexagon.toString());
+					} else {
+						shape = shapes.get(0);
+						Point center = new Point();
+						int radius, edgeColor, innerColor;
+						
+						center.setX(Integer.parseInt(row.substring(findIndexOf(4, '(', row) + 1, findIndexOf(5, ',', row))));
+						center.setY(Integer.parseInt(row.substring(findIndexOf(5, ',', row) + 2, findIndexOf(4, ')', row))));
+						radius = (Integer.parseInt(row.substring(findIndexOf(2, '=', row) + 1, findIndexOf(7, ',', row))));
+						edgeColor = (Integer.parseInt(row.substring(findIndexOf(5, '(', row) + 1, findIndexOf(5, ')', row))));
+						innerColor = (Integer.parseInt(row.substring(findIndexOf(6, '(', row) + 1, findIndexOf(6, ')', row))));
+						
+						HexagonAdapter newHexagon = new HexagonAdapter(center, radius, new Color(edgeColor), new Color(innerColor));
+						
+						cmdModifyHexagon = new CmdModifyHexagon((HexagonAdapter) shape, newHexagon);
+						cmdModifyHexagon.execute();
+						undoStack.push(cmdModifyHexagon);
+						redoStack.clear();
+						frame.getTextArea().append(cmdModifyHexagon.toString());
+					}
+				} else if (shape instanceof Rectangle) {
+					CmdModifyRectangle cmdModifyRectangle;
+					
+					if (row.contains("Undo")) {
+						cmdModifyRectangle = (CmdModifyRectangle) undoStack.peek();
+						cmdModifyRectangle.unexecute();
+						undoStack.pop();
+						redoStack.push(cmdModifyRectangle);
+						frame.getTextArea().append(cmdModifyRectangle.toString());
+					} else if (row.contains("Redo")) {
+						cmdModifyRectangle = (CmdModifyRectangle) redoStack.peek();
+						cmdModifyRectangle.execute(); 
+						redoStack.pop();
+						undoStack.push(cmdModifyRectangle);
+						frame.getTextArea().append("Redo " + cmdModifyRectangle.toString());
+					} else {
+						shape = shapes.get(0);
+						Point upperLeftPoint = new Point();
+						int width, height, edgeColor, innerColor;
+						
+						upperLeftPoint.setX(Integer.parseInt(row.substring(findIndexOf(4, '(', row) + 1, findIndexOf(6, ',', row))));
+						upperLeftPoint.setY(Integer.parseInt(row.substring(findIndexOf(6, ',', row) + 2, findIndexOf(4, ')', row))));
+						
+						width = Integer.parseInt(row.substring(findIndexOf(3, '=', row) + 1, findIndexOf(8, ',', row)));
+						height = Integer.parseInt(row.substring(findIndexOf(4, '=', row) + 1, findIndexOf(9, '=', row)));
+						
+						innerColor = Integer.parseInt(row.substring(findIndexOf(5, '(', row) + 1, findIndexOf(5, ')', row)));
+						edgeColor = Integer.parseInt(row.substring(findIndexOf(6, '(', row) + 1, findIndexOf(6, ')', row)));						
+					
+						Rectangle newRectangle = new Rectangle(upperLeftPoint, width, height, new Color(edgeColor), new Color(innerColor));
+						
+						cmdModifyRectangle = new CmdModifyRectangle((Rectangle) shape, newRectangle);
+						cmdModifyRectangle.execute(); 
+						undoStack.push(cmdModifyRectangle);
+						redoStack.clear();
+						frame.getTextArea().append(cmdModifyRectangle.toString());
+					}
+				} else if (shape instanceof Donut) {
+					CmdModifyDonut cmdModifyDonut;
+					
+					if(row.contains("Undo")) {
+						cmdModifyDonut = (CmdModifyDonut) undoStack.peek();
+						cmdModifyDonut.unexecute(); 
+						undoStack.pop();
+						redoStack.push(cmdModifyDonut);
+						frame.getTextArea().append("Undo " + cmdModifyDonut.toString());
+					} else if (row.contains("Redo")) {
+						cmdModifyDonut = (CmdModifyDonut) redoStack.peek();
+						cmdModifyDonut.execute(); 
+						redoStack.pop();
+						undoStack.push(cmdModifyDonut);
+						frame.getTextArea().append("Redo " + cmdModifyDonut.toString());
+					} else {
+						shape = shapes.get(0);
+						Point center = new Point();
+						int radius, innerRadius, edgeColor, innerColor;
+						
+						center.setX(Integer.parseInt(row.substring(findIndexOf(4, '(', row) + 1, findIndexOf(6, ',', row))));
+						center.setY(Integer.parseInt(row.substring(findIndexOf(6, ',', row) + 2, findIndexOf(4, ')', row))));
+						
+						radius = Integer.parseInt(row.substring(findIndexOf(3, '=', row) + 1, findIndexOf(8, ',', row)));
+						innerRadius = Integer.parseInt(row.substring(findIndexOf(4, '=', row) + 1, findIndexOf(9, ',', row)));
+						
+						edgeColor = Integer.parseInt(row.substring(findIndexOf(5, '(', row) + 1, findIndexOf(5, ')', row)));
+						innerColor = Integer.parseInt(row.substring(findIndexOf(6, '(', row) + 1, findIndexOf(6, ')', row)));
+						
+						Donut newDonut = new Donut(center, radius, innerRadius, new Color(edgeColor), new Color(innerColor));
+						
+						cmdModifyDonut = new CmdModifyDonut((Donut) shape, newDonut);
+						cmdModifyDonut.execute(); 
+						undoStack.push(cmdModifyDonut);
+						redoStack.clear();
+						frame.getTextArea().append(cmdModifyDonut.toString());	
+					}
+				} else if (shape instanceof Circle) {
+					CmdModifyCircle cmdModifyCircle;
+					
+					if(row.contains("Undo")) {
+						cmdModifyCircle = (CmdModifyCircle) undoStack.peek();
+						cmdModifyCircle.unexecute(); 
+						undoStack.pop();
+						redoStack.push(cmdModifyCircle);
+						frame.getTextArea().append("Undo " + cmdModifyCircle.toString());
+					} else if (row.contains("Redo")) {
+						cmdModifyCircle = (CmdModifyCircle) redoStack.peek();
+						cmdModifyCircle.execute(); 
+						redoStack.pop();
+						undoStack.push(cmdModifyCircle);
+						frame.getTextArea().append("Redo " + cmdModifyCircle.toString());
+					} else {
+						shape = shapes.get(0);
+						Point center = new Point();
+						int radius, edgeColor, innerColor;
+						
+						center.setX(Integer.parseInt(row.substring(findIndexOf(3, '(', row) + 1, findIndexOf(5, ',', row))));
+						center.setY(Integer.parseInt(row.substring(findIndexOf(5, ',', row) + 2, findIndexOf(3, ')', row))));
+						radius = Integer.parseInt(row.substring(findIndexOf(2, '=', row) + 1, findIndexOf(7, ',', row) + 1));
+						edgeColor = Integer.parseInt(row.substring(findIndexOf(5, '(', row) + 1, findIndexOf(5, ')', row)));
+						innerColor = Integer.parseInt(row.substring(findIndexOf(6, '(', row) + 1, findIndexOf(6, ')', row)));
+						
+						Circle newCircle = new Circle(center, radius, new Color(edgeColor), new Color(innerColor));
+						
+						cmdModifyCircle = new CmdModifyCircle((Circle) shape, newCircle);
+						cmdModifyCircle.execute(); 
+						undoStack.push(cmdModifyCircle);
+						redoStack.clear();
+						frame.getTextArea().append(cmdModifyCircle.toString());
+					}
+				}
+			} else if (row.contains("Removed")) {
+				CmdRemoveShape cmdRemoveShape;
+				
+				if(row.contains("Undo")) {
+					cmdRemoveShape = (CmdRemoveShape) undoStack.peek();
+					cmdRemoveShape.unexecute();
+					//System.out.println(undoShapes.size() + "size");
+					redoShapes.add(undoShapes.get(undoShapes.size() - 1));
+					shapes.add(undoShapes.get(undoShapes.size() - 1));
+					undoShapes.remove(undoShapes.size() - 1);
+					undoStack.pop();
+					redoStack.push(cmdRemoveShape);
+					frame.getTextArea().append("Undo " + cmdRemoveShape.toString());
+				} else if (row.contains("Redo")) {
+					cmdRemoveShape = (CmdRemoveShape) redoStack.peek();
+					cmdRemoveShape.execute();
+					undoShapes.add(redoShapes.get(redoShapes.size() - 1));
+					shapes.remove(redoShapes.get(redoShapes.size() - 1));
+					redoShapes.remove(redoShapes.size() - 1);
+					redoStack.pop();
+					undoStack.push(cmdRemoveShape);
+					frame.getTextArea().append("Redo " + cmdRemoveShape.toString());
+				} else {
+					shape = shapes.get(0);
+					cmdRemoveShape = new CmdRemoveShape(model, shape, model.getShapes().indexOf(shape));
+					cmdRemoveShape.execute();
+					shapes.remove(shape);
+					shapes.add(shape);
+					undoStack.push(cmdRemoveShape);
+					redoStack.clear();
+					frame.getTextArea().append(cmdRemoveShape.toString());
+				}
+			
+			
+			
+			
+			} 
+			
+			logCounter++;
+			//frame.getView().repaint();
+			frame.repaint();
+		} else {
+			frame.getBtnLoadNext().setEnabled(false);
+			frame.getTglBtnPoint().setEnabled(true);
+			frame.getTglBtnLine().setEnabled(true);
+			frame.getTglBtnCircle().setEnabled(true);
+			frame.getTglBtnDonut().setEnabled(true);
+			frame.getTglBtnRectangle().setEnabled(true);
+			frame.getTglBtnHexagon().setEnabled(true);
+			frame.getBtnUndo().setEnabled(false);
+		}
+	}
+	
+	
+	
+	
 
 	public void undoRedoButtons() {
 		if (undoCounter < 1) {
@@ -777,5 +1485,20 @@ public class DrawingController {
 		undoRedoButtons();
 		
 	}
+	
+	public int findIndexOf(int n, char c, String s) {
+        int occurr = 0;
+        for(int i = 0; i < s.length(); i++) {
+            if(s.charAt(i) == c) {
+                occurr += 1;
+            }
+            if(occurr == n) {
+                return i;
+            }
+        }
+        return -1;
+    }
+	
+	
 
 }

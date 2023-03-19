@@ -1,11 +1,13 @@
 package geometry;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.io.Serializable;
 
 public abstract class Shape implements Serializable{
 
 	private boolean selected;
+
 
 	public Shape() {
 		
@@ -22,9 +24,12 @@ public abstract class Shape implements Serializable{
 		return selected;
 	}
 
+	
+	
 	public void setSelected(boolean selected) {
 		this.selected = selected;
 	}
 
+	
 	
 }

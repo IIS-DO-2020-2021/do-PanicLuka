@@ -120,6 +120,8 @@ private Color colSmallerEdge;
 	
 	@Override
 	public String toString() {
-		return super.toString() + ", inner radius=" + innerRadius ;
+		return "Donut -->" + "Center: " + "(" + getCenter().getX() + ", "+  getCenter().getY() + ")" + ", Radius= " + radius + ", inner radius=" + innerRadius 
+				+ ", innerColor="  + "(" + Integer.toString(getColInner().getRGB())+ ")" 
+				+ " , edgeColor=" + "("  +Integer.toString(getColEdge().getRGB()) + ")"; 
 	}
 }

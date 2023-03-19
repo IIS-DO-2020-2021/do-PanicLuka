@@ -5,7 +5,7 @@ import java.awt.Graphics;
 
 public class Circle extends Shape {
 	private Point center = new Point();
-	private int radius;
+	protected int radius;
 	private Color colInner;
 	private Color colEdge;
 
@@ -123,6 +123,8 @@ public class Circle extends Shape {
 	
 	@Override
 	public String toString() {
-		return "Center=" + center + ", radius=" + radius; 
+		return "Circle --> Center=" + "("+  center.getX() + ", " + center.getY()  + ")" + ", radius=" + radius
+				+ ", innerColor="  + "(" + Integer.toString(getColInner().getRGB())+ ")" 
+				+ ", edgeColor=" + "("  +Integer.toString(getColEdge().getRGB()) + ")"; 
 	}
 }
