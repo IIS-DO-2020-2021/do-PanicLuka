@@ -62,7 +62,10 @@ public class DrawingFrame extends JFrame {
 	JButton btnLoadNext;
 	JButton btnOpenPainting;
 	JButton btnOpenLog;
-	 
+	JButton btnToFront;
+	JButton btnToBack;
+	JButton btnBringToFront;
+	JButton btnBringToBack;
 
 	
 	
@@ -91,7 +94,14 @@ public class DrawingFrame extends JFrame {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		ButtonGroup group=new ButtonGroup();
+		//ButtonGroup groupVertical=new ButtonGroup();
+
+		
+
 		JToolBar toolBar = new JToolBar();
+		 //JToolBar toolbarVertical = new JToolBar(null, JToolBar.VERTICAL);
+		
+
 		
 		
 		tglbtnHexagon = new JToggleButton("Hexagon");
@@ -317,13 +327,106 @@ public class DrawingFrame extends JFrame {
 		btnOpenPainting.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		toolBar.add(btnOpenPainting);
 		
+		// to front
+
+		btnToFront = new JButton("To Front");
 		
+
+		btnToFront.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				
+					controller.toFront();
+				
+			}
+		});
+		group.add(btnToFront);
+		btnToFront.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		toolBar.add(btnToFront);
+		
+		
+		btnToBack = new JButton("To Back");
+		
+
+		btnToBack.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				
+					controller.toBack();
+				
+			}
+		});
+		group.add(btnToBack);
+		btnToBack.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		toolBar.add(btnToBack);
+		
+		btnBringToFront = new JButton("Bring To Front");
+		
+
+		btnBringToFront.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				
+					controller.bringToFront();
+				
+			}
+		});
+		group.add(btnBringToFront);
+		btnBringToFront.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		toolBar.add(btnBringToFront);
+		
+		btnBringToBack = new JButton("Bring To Back");
+		
+
+		btnBringToBack.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				
+					controller.bringToBack();
+				
+			}
+		});
+		group.add(btnBringToBack);
+		btnBringToBack.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		toolBar.add(btnBringToBack);
+
 		
 		
 		
 		
 		JPanel panelLog = new JPanel();
 		panelLog.setBackground(Color.WHITE);
+		panelLog.setLayout(null);
+		
+		scrollPane = new JScrollPane();
+		
+		GroupLayout gl_PanelLog = new GroupLayout(panelLog);
+		gl_PanelLog.setHorizontalGroup(gl_PanelLog.createParallelGroup(Alignment.LEADING)
+				.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 946, Short.MAX_VALUE));
+		gl_PanelLog.setVerticalGroup(gl_PanelLog.createParallelGroup(Alignment.TRAILING)
+				.addComponent(scrollPane, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 109, Short.MAX_VALUE));
+		
+		
+		
+		
+		textArea = new JTextArea();
+		textArea.setEditable(false);
+		//scrollPane.setBounds(50, 50, 50, 50);
+		scrollPane.setViewportView(textArea);
+		
+		panelLog.setLayout(gl_PanelLog);
+		
+		
+		
+		
+		
+		view.add(panelLog);
+		
+		
+		
+		
+		
+		//panelLog.setLocation(500, 250);
 		
 		
 		
@@ -339,41 +442,30 @@ public class DrawingFrame extends JFrame {
 					.addContainerGap()
 					.addComponent(toolBar, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 					.addContainerGap(129, Short.MAX_VALUE))
+				.addGroup(gl_contentPane.createSequentialGroup()
+						.addContainerGap()
+						//.addComponent(toolbarVertical, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addContainerGap(800, Short.MAX_VALUE))
+				
 		);
 		gl_contentPane.setVerticalGroup(
 			gl_contentPane.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_contentPane.createSequentialGroup()
 					.addContainerGap()
 					.addComponent(toolBar, GroupLayout.PREFERRED_SIZE, 46, GroupLayout.PREFERRED_SIZE)
+					//.addComponent(toolbarVertical, GroupLayout.PREFERRED_SIZE, 50, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(view, GroupLayout.DEFAULT_SIZE, 408, Short.MAX_VALUE))
 		);
+		
+	
+		
 		
 		
 		
 		contentPane.setLayout(gl_contentPane);
 		
 		
-		scrollPane = new JScrollPane();
-		
-		GroupLayout gl_PanelLog = new GroupLayout(panelLog);
-		gl_PanelLog.setHorizontalGroup(gl_PanelLog.createParallelGroup(Alignment.LEADING)
-				.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 946, Short.MAX_VALUE));
-		gl_PanelLog.setVerticalGroup(gl_PanelLog.createParallelGroup(Alignment.TRAILING)
-				.addComponent(scrollPane, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 109, Short.MAX_VALUE));
-		
-		
-		
-		
-		textArea = new JTextArea();
-		textArea.setEditable(false);
-		scrollPane.setViewportView(textArea);
-		
-		panelLog.setLayout(gl_PanelLog);
-		
-		
-		
-		view.add(panelLog);
 		
 	
 		

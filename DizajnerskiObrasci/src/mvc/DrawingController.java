@@ -28,12 +28,16 @@ import command.CmdModifyPoint;
 import command.CmdModifyRectangle;
 import command.CmdModifyLine;
 import command.CmdAddShape;
+import command.CmdBringToBack;
+import command.CmdBringToFront;
 import command.CmdDeselectShape;
 import command.CmdModifyCircle;
 import command.CmdModifyDonut;
 import command.CmdModifyHexagon;
 import command.CmdRemoveShape;
 import command.CmdSelectShape;
+import command.CmdToBack;
+import command.CmdToFront;
 import command.Command;
 import dialogs.DialogCircle;
 import dialogs.DialogDonut;
@@ -615,7 +619,7 @@ public class DrawingController {
     	
     	for(int i = shapes.size() - 1; i>=0;i--)
     	{
-    		shape = shapes.get(0);
+    		shape = testShape;
     		command = new CmdRemoveShape(model, shape, model.getShapes().indexOf(shape));
     		command.execute();
     		frame.getTextArea().append(command.toString());
@@ -1396,16 +1400,135 @@ public class DrawingController {
 					undoStack.push(cmdRemoveShape);
 					redoStack.clear();
 					frame.getTextArea().append(cmdRemoveShape.toString());
-				}
+				} 
+			} else if (row.contains("Moved to back")) {
+					CmdToBack cmdToBack;
+					
+					if (row.contains("Undo")) {
+						cmdToBack = (CmdToBack) undoStack.peek();
+						cmdToBack.unexecute();
+						
+						undoStack.pop();
+						redoStack.push(cmdToBack);
+						
+						frame.getTextArea().append("Undo " + cmdToBack.toString());
+					} else if (row.contains("Redo")) {
+						cmdToBack = (CmdToBack) redoStack.peek();
+						cmdToBack.execute();
+						
+						redoStack.pop();
+						undoStack.push(cmdToBack);
+						
+						frame.getTextArea().append("Redo " + cmdToBack.toString());
+					} else {
+						shape = shapes.get(0);
+						
+						cmdToBack = new CmdToBack(model, shape);
+						cmdToBack.execute(); 
+						
+						undoStack.push(cmdToBack);
+						redoStack.clear();
+						frame.getTextArea().append(cmdToBack.toString());
+					}
+				} else if (row.contains("Moved to front")) {
+					CmdToFront cmdToFront;
+					
+					if(row.contains("Undo")) {
+						cmdToFront = (CmdToFront) undoStack.peek();
+						cmdToFront.unexecute(); 
+						
+						undoStack.pop();
+						redoStack.push(cmdToFront);
+						
+						frame.getTextArea().append("Undo " + cmdToFront.toString());
+					} else if (row.contains("Redo")) {
+						cmdToFront = (CmdToFront) redoStack.peek();
+						cmdToFront.execute(); 
+						
+						redoStack.pop();
+						undoStack.push(cmdToFront);
+						
+						frame.getTextArea().append("Redo " + cmdToFront.toString());
+					} else {
+						shape = shapes.get(0);
+						cmdToFront = new CmdToFront(model, shape);
+						cmdToFront.execute(); 
+						
+						undoStack.push(cmdToFront);
+						redoStack.clear();
+						
+						frame.getTextArea().append(cmdToFront.toString());
+					}
+				} else if (row.contains("Brought to back")) {
+					CmdBringToBack cmdBringToBack;
+
+					if (row.contains("Undo")) {
+						cmdBringToBack = (CmdBringToBack) undoStack.peek();
+						cmdBringToBack.unexecute();
+						
+						undoStack.pop();
+						redoStack.push(cmdBringToBack);
+						
+						frame.getTextArea().append("Undo " + cmdBringToBack.toString());
+					} else if (row.contains("Redo")) {
+						cmdBringToBack = (CmdBringToBack) redoStack.peek();
+						cmdBringToBack.execute();
+						
+						redoStack.pop();
+						undoStack.push(cmdBringToBack);
+						
+						frame.getTextArea().append("Redo " + cmdBringToBack.toString());
+					} else {
+						shape = shapes.get(0);
+						
+						cmdBringToBack = new CmdBringToBack(model, shape);
+						cmdBringToBack.execute();
+						
+						undoStack.push(cmdBringToBack);
+						redoStack.clear();
+						
+						frame.getTextArea().append(cmdBringToBack.toString());
+					}
+				} else if (row.contains("Brought to front")) {
+					CmdBringToFront cmdBringToFront;
+
+					if (row.contains("Undo")) {
+						cmdBringToFront = (CmdBringToFront) undoStack.peek();
+						cmdBringToFront.unexecute();
+						
+						undoStack.pop();
+						redoStack.push(cmdBringToFront);
+						
+						frame.getTextArea().append("Undo " + cmdBringToFront.toString());
+					} else if (row.contains("Redo")) {
+						cmdBringToFront = (CmdBringToFront) redoStack.peek();
+						cmdBringToFront.execute();
+						
+						redoStack.pop();
+						undoStack.push(cmdBringToFront);
+						
+						frame.getTextArea().append("Redo " + cmdBringToFront.toString());
+					} else {
+						shape = shapes.get(0);
+						
+						cmdBringToFront = new CmdBringToFront(model, shape);
+						cmdBringToFront.execute();
+						
+						undoStack.push(cmdBringToFront);
+						redoStack.clear();
+						
+						frame.getTextArea().append(cmdBringToFront.toString());
+					}
+				} 
 			
 			
 			
 			
-			} 
+			
 			
 			logCounter++;
-			//frame.getView().repaint();
-			frame.repaint();
+			frame.getView().repaint();
+			//frame.repaint();
 		} else {
 			frame.getBtnLoadNext().setEnabled(false);
 			frame.getTglBtnPoint().setEnabled(true);
@@ -1484,6 +1607,68 @@ public class DrawingController {
 		
 		undoRedoButtons();
 		
+	}
+	
+	public void toFront() {
+		Shape shape = testShape;
+		CmdToFront cmdToFront = new CmdToFront(model, shape);
+		cmdToFront.execute();
+		frame.getTextArea().append(cmdToFront.toString());
+		undoStack.push(cmdToFront);
+		undoCounter++;
+		redoStack.clear();
+		undoRedoButtons();
+
+		frame.getView().repaint();
+		//frame.repaint();
+	}
+	
+	public void toBack() {
+		Shape shape = testShape;
+		CmdToBack cmdToBack = new CmdToBack(model, shape);
+		cmdToBack.execute();
+		
+		frame.getTextArea().append(cmdToBack.toString());
+		
+		undoStack.push(cmdToBack);
+		undoCounter++;
+		redoStack.clear();
+		undoRedoButtons();
+		frame.getView().repaint();
+		//frame.repaint();
+	}
+	
+	public void bringToFront() {
+		Shape shape = testShape;
+		
+		CmdBringToFront cmdBringToFront = new CmdBringToFront(model, shape);
+		cmdBringToFront.execute();
+		
+		frame.getTextArea().append(cmdBringToFront.toString());
+		undoStack.push(cmdBringToFront);
+		undoCounter++;
+		redoStack.clear();
+		
+		undoRedoButtons();
+		
+		frame.getView().repaint();
+		//frame.repaint();
+	}
+	
+	
+	public void bringToBack() {
+		Shape shape = testShape;
+		
+		CmdBringToBack cmdBringToBack = new CmdBringToBack(model, shape);
+		cmdBringToBack.execute();
+		
+		frame.getTextArea().append(cmdBringToBack.toString());
+		undoStack.push(cmdBringToBack);
+		undoCounter++;
+		redoStack.clear();
+		undoRedoButtons();
+		frame.getView().repaint();
+		//frame.repaint();
 	}
 	
 	public int findIndexOf(int n, char c, String s) {
