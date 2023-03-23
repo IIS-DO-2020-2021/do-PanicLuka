@@ -33,6 +33,8 @@ public class DialogLine extends JDialog {
 	private JTextField txtEndCoordY;
 	private boolean ok;
 	private Color col;
+	private JColorChooser chooser = new JColorChooser();
+
 	
 	
 
@@ -131,7 +133,7 @@ public class DialogLine extends JDialog {
 		btnColor.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				col=JColorChooser.showDialog(null, "Pick your color", null);
+				col=JColorChooser.showDialog(null, "Pick your color", getColorChooser().getColor());
 			}
 		});
 		GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
@@ -292,6 +294,13 @@ public class DialogLine extends JDialog {
 	public void setTxtEndCoordYEdt(boolean b)
 	{
 		this.txtEndCoordY.setEditable(b);
+	}
+	public void setColorChooser(JColorChooser chooser)
+	{
+		this.chooser=chooser;
+	}
+	public JColorChooser getColorChooser() {
+		return chooser;
 	}
 	
 

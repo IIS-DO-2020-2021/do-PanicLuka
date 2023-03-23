@@ -39,6 +39,8 @@ public class DialogDonut extends JDialog {
 	private Color ColEdge;
 	private boolean ok;
 	
+	private JColorChooser edgeColorChooser = new JColorChooser();
+	private JColorChooser innerColorChooser = new JColorChooser();
 	
 
 	/**
@@ -117,7 +119,7 @@ public class DialogDonut extends JDialog {
 		btnColInnerr.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				ColInner=JColorChooser.showDialog(null, "Pick your color", Color.WHITE);
+				ColInner=JColorChooser.showDialog(null, "Pick your color", getColorChooserInner().getColor());
 			}
 		});
 		
@@ -125,7 +127,7 @@ public class DialogDonut extends JDialog {
 		btnColEdge.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				ColEdge=JColorChooser.showDialog(null, "Pick your color", Color.BLACK);
+				ColEdge=JColorChooser.showDialog(null, "Pick your color", getColorChooserEdge().getColor());
 			}
 		});
 		GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
@@ -317,6 +319,21 @@ public class DialogDonut extends JDialog {
 
 	public void setOk(boolean ok) {
 		this.ok = ok;
+	}
+	public void setColorChooserInner(JColorChooser chooser)
+	{
+		this.innerColorChooser=chooser;
+	}
+	public JColorChooser getColorChooserInner() {
+		return innerColorChooser;
+	}
+	
+	public void setColorChooserEdge(JColorChooser chooser)
+	{
+		this.edgeColorChooser=chooser;
+	}
+	public JColorChooser getColorChooserEdge() {
+		return edgeColorChooser;
 	}
 
 }

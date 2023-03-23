@@ -2,6 +2,7 @@ package mvc;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import javax.swing.JColorChooser;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
@@ -45,6 +46,10 @@ public class DrawingFrame extends JFrame {
 	private DrawingView view = new DrawingView();
 	private DrawingController controller;
 	
+	private Color innerColor = new Color(0, 0, 0);
+	private Color edgeColor = new Color(255, 255, 255);
+	
+	
 	private JPanel contentPane;
 	JToggleButton tglbtnHexagon;
 	JToggleButton tglbtnPoint;
@@ -66,6 +71,8 @@ public class DrawingFrame extends JFrame {
 	JButton btnToBack;
 	JButton btnBringToFront;
 	JButton btnBringToBack;
+	JButton btnInnerColor;
+	JButton btnEdgeColor;
 
 	
 	
@@ -391,6 +398,61 @@ public class DrawingFrame extends JFrame {
 		toolBar.add(btnBringToBack);
 
 		
+		btnInnerColor = new JButton("Inner Color");
+		
+		btnInnerColor.setBackground(Color.WHITE);
+
+		
+
+//		btnInnerColor.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//				Color temp = JColorChooser.showDialog(null, "Choose Color", innerColor);
+//				if (temp != null) {
+//					innerColor = temp;
+//					btnInnerColor.setBackground(innerColor);
+//					controller.modifyInnerColor(temp);
+//				}
+//			}
+//		});
+		
+		btnInnerColor.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				
+				Color temp = JColorChooser.showDialog(null, "Choose Color", Color.WHITE);
+				if (temp != null) {
+					innerColor = temp;
+					btnInnerColor.setBackground(innerColor);
+					//controller.modifyInnerColor(temp);
+					//repaint();
+				}
+				
+			}
+		});
+		group.add(btnInnerColor);
+		btnInnerColor.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		toolBar.add(btnInnerColor);
+		
+		
+		btnEdgeColor = new JButton("Edge Color");
+		
+		btnEdgeColor.setBackground(Color.BLACK);
+		
+
+		btnEdgeColor.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				Color temp = JColorChooser.showDialog(null, "Choose Color", Color.BLACK);
+				if (temp != null) {
+					edgeColor = temp;
+					btnEdgeColor.setBackground(edgeColor);
+				}
+			}
+		});
+		group.add(btnEdgeColor);
+		btnEdgeColor.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		toolBar.add(btnEdgeColor);
+		
 		
 		
 		
@@ -590,4 +652,29 @@ public class DrawingFrame extends JFrame {
 		return btnLoadNext;
 	}
 
+	public boolean getBtnInnerColorSelected() {
+		return btnInnerColor.isSelected();
+	}
+	
+	public boolean getBtnEdgeColorSelected() {
+		return btnEdgeColor.isSelected();
+	}
+	
+	public JButton getBtnInnerColor() {
+		return btnInnerColor;
+	}
+
+	public void setBtnInnerColor(JButton btnInnerColor) {
+		this.btnInnerColor = btnInnerColor;
+	}
+	
+	public JButton getBtnEdgeColor() {
+		return btnEdgeColor;
+	}
+
+	public void setBtnEdgeColor(JButton btnEdgeColor) {
+		this.btnEdgeColor = btnEdgeColor;
+	}
+	
+	
 }

@@ -46,6 +46,9 @@ public class DialogRectangle extends JDialog {
 	private JButton btnEdgeColor;
 	private Color innerColor;
 	private Color edgeColor;
+	private JColorChooser edgeColorChooser = new JColorChooser();
+	private JColorChooser innerColorChooser = new JColorChooser();
+
 	
 
 
@@ -145,14 +148,14 @@ public class DialogRectangle extends JDialog {
 		btnInnerColor.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				innerColor=JColorChooser.showDialog(null, "Pick your color", Color.WHITE);
+				innerColor=JColorChooser.showDialog(null, "Pick your color", getColorChooserInner().getColor());
 			}
 		});
 		btnEdgeColor = new JButton("Edge color");
 		btnEdgeColor.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				edgeColor=JColorChooser.showDialog(null, "Pick your color", Color.BLACK);
+				edgeColor=JColorChooser.showDialog(null, "Pick your color",getColorChooserEdge().getColor());
 			}
 		});
 		GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
@@ -354,5 +357,20 @@ public class DialogRectangle extends JDialog {
 
 	public void setTxtWidth(String broj) {
 		this.txtWidth.setText(broj);;
+	}
+	public void setColorChooserInner(JColorChooser chooser)
+	{
+		this.innerColorChooser=chooser;
+	}
+	public JColorChooser getColorChooserInner() {
+		return innerColorChooser;
+	}
+	
+	public void setColorChooserEdge(JColorChooser chooser)
+	{
+		this.edgeColorChooser=chooser;
+	}
+	public JColorChooser getColorChooserEdge() {
+		return edgeColorChooser;
 	}
 }

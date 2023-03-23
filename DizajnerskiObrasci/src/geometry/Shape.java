@@ -7,6 +7,7 @@ import java.io.Serializable;
 public abstract class Shape implements Serializable{
 
 	private boolean selected;
+	private Color color;
 
 
 	public Shape() {
@@ -28,6 +29,14 @@ public abstract class Shape implements Serializable{
 	
 	public void setSelected(boolean selected) {
 		this.selected = selected;
+	}
+	
+	public Color getColor() {
+		return color;
+	}
+
+	public void setColor(Color color) {
+		this.color = color;
 	}
 
 	

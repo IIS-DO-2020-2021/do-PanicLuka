@@ -135,30 +135,57 @@ public class DrawingController {
 		frame.repaint();
 		
 		if(frame.getTglbtnPoint()) {
+			Color color = frame.getBtnEdgeColor().getBackground();
 			
 			DialogPoint dp=new DialogPoint();
+			dp.getColorChooser().setColor(color);
 			dp.setTbXEdt(false);
 			dp.setTxtYEdt(false);
 			dp.setTxtX(Integer.toString(e.getX()));
 			dp.setTxtY(Integer.toString(e.getY()));
 			dp.setVisible(true);
-			//p.setCol(dp.getColor());
 			
-			Point p=new Point(e.getX(),e.getY(), dp.getColor());
+			
+			Point p=new Point(e.getX(),e.getY());
+			
+			
+				//p.setCol(dp.getColor());
+				
+		
+			
+			
+			
+			p.setCol(dp.getColor());
+			
+			//dp.setColor(color);
+			//p.setCol(color);
+			
+		
+			
+ 			
+			
+			
+			
+			
+			
+			
+			
 			command = new CmdAddShape(model, p);
 			command.execute();
 			frame.getTextArea().append(command.toString());
 			undoCounter++;
 			undoStack.push(command);
 			redoStack.clear();
+			frame.getBtnEdgeColor().setBackground(Color.BLACK);
 		}
 		else if(frame.getTglbtnLine())
 		{
 			if(startPoint==null)
 			startPoint=new Point(e.getX(),e.getY());
 			else {
-			
+			Color color = frame.getBtnEdgeColor().getBackground();
 			DialogLine dl=new DialogLine();
+			dl.getColorChooser().setColor(color);
 			dl.setTxtEndCoordXEdt(false);
 			dl.setTxtEndCoordYEdt(false);
 			dl.setTxtStartCoordXEdt(false);
@@ -169,7 +196,10 @@ public class DrawingController {
 			dl.setTxtEndCoordY(Integer.toString(e.getY()));
 			dl.setVisible(true);
 			
-			Line l=new Line(startPoint,new Point(e.getX(),e.getY()), dl.getCol());
+			Line l=new Line(startPoint,new Point(e.getX(),e.getY()));
+			
+			l.setCol(dl.getCol());
+			
 			command = new CmdAddShape(model, l);
 			command.execute();
 			frame.getTextArea().append(command.toString());
@@ -178,13 +208,22 @@ public class DrawingController {
 			undoStack.push(command);
 			redoStack.clear();
 			startPoint=null;
+			frame.getBtnEdgeColor().setBackground(Color.BLACK);
+
 			}
 		}
 		else if(frame.getTglbtnHexagon())
 		{
 			Point p=new Point(e.getX(),e.getY());
 			
+			Color colorEdge = frame.getBtnEdgeColor().getBackground();
+			Color colorInner = frame.getBtnInnerColor().getBackground();
+
+			
 			DialogHexagon dija=new DialogHexagon();
+			dija.getColorChooserEdge().setColor(colorEdge);
+			dija.getColorChooserInner().setColor(colorInner);
+
 			dija.setTxtCoordX(Integer.toString(p.getX()));
 			dija.setTxtCoordY(Integer.toString(p.getY()));
 			dija.setTxtCoordXEdt(false);
@@ -198,8 +237,7 @@ public class DrawingController {
 			HexagonAdapter h= new HexagonAdapter(new Point(Integer.parseInt(dija.getTxtCoordX()), Integer.parseInt(dija.getTxtCoordY()))
 					,Integer.parseInt(dija.getTextRadius()),
 					false
-					,dija.getColEdge(),
-					dija.getColInner());
+					);
 			h.setHexagonRadius(radius);
 			h.setHexagonBorderColor(dija.getColEdge());
 			h.setHexagonInnerColor(dija.getColInner());
@@ -210,6 +248,8 @@ public class DrawingController {
 			undoCounter++;
 			undoStack.push(command);
 			redoStack.clear();
+			frame.getBtnEdgeColor().setBackground(Color.BLACK);
+			frame.getBtnInnerColor().setBackground(Color.WHITE);
 			}
 			catch(NumberFormatException ex)
 			{
@@ -223,8 +263,15 @@ public class DrawingController {
 		}
 		else if(frame.getTglbtnRectangle())
 		{
+			
 			Point p=new Point(e.getX(),e.getY());
+			
+			Color colorEdge = frame.getBtnEdgeColor().getBackground();
+			Color colorInner = frame.getBtnInnerColor().getBackground();
+			
 			DialogRectangle dija=new DialogRectangle();
+			dija.getColorChooserEdge().setColor(colorEdge);
+			dija.getColorChooserInner().setColor(colorInner);
 			dija.setTxtXCoordinate(Integer.toString(p.getX()));
 			dija.setTxtYCoordinate(Integer.toString(p.getY()));
 			dija.setTxtXCoordinateEnabled(false);
@@ -244,6 +291,8 @@ public class DrawingController {
 			undoCounter++;
 			undoStack.push(command);
 			redoStack.clear();
+			frame.getBtnEdgeColor().setBackground(Color.BLACK);
+			frame.getBtnInnerColor().setBackground(Color.WHITE);
 			}
 			catch(NumberFormatException ex)
 			{
@@ -258,7 +307,15 @@ public class DrawingController {
 		else if(frame.getTglbtnCircle())
 		{
 			Point center=new Point(e.getX(),e.getY());
+			
+			Color colorEdge = frame.getBtnEdgeColor().getBackground();
+			Color colorInner = frame.getBtnInnerColor().getBackground();
+			
 			DialogCircle dija=new DialogCircle();
+			
+			dija.getColorChooserEdge().setColor(colorEdge);
+			dija.getColorChooserInner().setColor(colorInner);
+			
 			dija.setTxtCoordXEdt(false);
 			dija.setTxtCoordYEdt(false);
 			dija.setTxtCoordX(Integer.toString(center.getX()));
@@ -280,6 +337,8 @@ public class DrawingController {
 				undoCounter++;
 				undoStack.push(command);
 				redoStack.clear();
+				frame.getBtnEdgeColor().setBackground(Color.BLACK);
+				frame.getBtnInnerColor().setBackground(Color.WHITE);
 			
 			}
 			}
@@ -295,11 +354,20 @@ public class DrawingController {
 		else if(frame.getTglbtnCirclewithHole())
 		{
 			Point center=new Point(e.getX(),e.getY());
+			
+			Color colorEdge = frame.getBtnEdgeColor().getBackground();
+			Color colorInner = frame.getBtnInnerColor().getBackground();
+			
 			DialogDonut dija=new DialogDonut();
+			
+			dija.getColorChooserEdge().setColor(colorEdge);
+			dija.getColorChooserInner().setColor(colorInner);
+			
 			dija.setTxtCoordX(Integer.toString(center.getX()));
 			dija.setTxtCoordY(Integer.toString(center.getY()));
 			dija.setTxtCoordXEditable(false);
-			dija.setTxtCoordYEditable(false);			dija.setVisible(true);
+			dija.setTxtCoordYEditable(false);	
+			dija.setVisible(true);
 			try
 			{
 			if(dija.isOk())
@@ -318,6 +386,8 @@ public class DrawingController {
 				undoCounter++;
 				undoStack.push(command);
 				redoStack.clear();
+				frame.getBtnEdgeColor().setBackground(Color.BLACK);
+				frame.getBtnInnerColor().setBackground(Color.WHITE);
 			}
 			}
 			catch(NumberFormatException ex)
@@ -351,6 +421,9 @@ public class DrawingController {
 		{
 			Point oldPoint = (Point) getTestShape();
 
+			
+			
+			
 			DialogPoint mt=new DialogPoint();
 			mt.setTxtX(Integer.toString(((Point) pomShape).getX()));
 			mt.setTxtY(Integer.toString(((Point) pomShape).getY()));
@@ -1670,6 +1743,80 @@ public class DrawingController {
 		frame.getView().repaint();
 		//frame.repaint();
 	}
+	
+//	protected void modifyInnerColor(Color innerCol)
+//	{
+//		if(getTestShape()!=null)
+//		{
+//			Shape pomShape=getTestShape();
+//	
+//
+//		if(getTestShape() instanceof Point)
+//		{
+//			Point oldPoint = (Point) getTestShape();
+//
+//			
+//			try {
+//			Point newPoint = new Point(oldPoint.getX(), oldPoint.getY(), true, innerCol);
+//			
+//			command = new CmdModifyPoint(oldPoint, newPoint);
+//			command.execute();
+//			frame.getTextArea().append(command.toString());
+//			
+//			
+//			undoStack.push(command);
+//			undoCounter++;
+//			redoStack.clear();
+//			
+//		
+//			
+//			}
+//			
+//			
+//			catch(Exception e)
+//			{
+//				//System.out.println(e.getMessage().toString());
+//				JOptionPane.showMessageDialog(new JFrame(), "Incorrect data entry.Check that all fields are filled with numeric values!", "Error!", JOptionPane.WARNING_MESSAGE);
+//			}
+//		} else if(getTestShape() instanceof Line)
+//		{
+//			Line oldLine = (Line) getTestShape();
+//			
+//			
+//			
+//			
+//			try
+//			{
+//			
+//				Line newLine = new Line(
+//						new Point(oldLine.getStartPoint().getX(), oldLine.getStartPoint().getY(),
+//								 true),
+//						new Point(oldLine.getEndPoint().getX(), oldLine.getEndPoint().getY(),
+//								 true),
+//							true,
+//						innerCol
+//						
+//						);
+//				
+//				
+//				command = new CmdModifyLine(oldLine, newLine);
+//				command.execute();
+//				
+//				frame.getTextArea().append(command.toString());
+//				undoStack.push(command);
+//				undoCounter++;
+//				redoStack.clear();
+//			
+//			}
+//			
+//			catch(Exception ex)
+//			{
+//				JOptionPane.showMessageDialog(new JFrame(), "Incorrect data entry.Check that all fields are filled with numeric values!", "Error", JOptionPane.WARNING_MESSAGE);
+//			}
+//		}
+//		}
+//	}
+//	
 	
 	public int findIndexOf(int n, char c, String s) {
         int occurr = 0;

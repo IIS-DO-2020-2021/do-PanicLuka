@@ -10,6 +10,9 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import mvc.DrawingFrame;
+
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JLabel;
@@ -26,11 +29,13 @@ import java.awt.event.ActionEvent;
 
 public class DialogPoint extends JDialog {
 
+	private DrawingFrame frame;
 	private final JPanel contentPanel = new JPanel();
 	private JTextField tbX;
 	private JTextField txtY;
 	private boolean ok;
 	private Color color;
+	private JColorChooser chooser = new JColorChooser();
 	
 	
 
@@ -49,6 +54,9 @@ public class DialogPoint extends JDialog {
 		}
 	}
 
+	public DialogPoint(Color color) {
+		this.color = color;
+	}
 	/**
 	 * Create the dialog.
 	 */
@@ -99,7 +107,7 @@ public class DialogPoint extends JDialog {
 		btncolor.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				color=JColorChooser.showDialog(null, "Pick the color of your point", null);
+				color=chooser.showDialog(null, "Pick the color of your point", getColorChooser().getColor());
 			}
 		});
 		GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
@@ -214,5 +222,12 @@ public class DialogPoint extends JDialog {
 	public void setTxtYEdt(boolean b)
 	{
 		this.txtY.setEditable(b);
+	}
+	public void setColorChooser(JColorChooser chooser)
+	{
+		this.chooser=chooser;
+	}
+	public JColorChooser getColorChooser() {
+		return chooser;
 	}
 }

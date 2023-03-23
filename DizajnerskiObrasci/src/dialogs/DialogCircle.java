@@ -37,6 +37,9 @@ public class DialogCircle extends JDialog {
 	private Color colInner;
 	private Color colEdge;
 	
+	private JColorChooser edgeColorChooser = new JColorChooser();
+	private JColorChooser innerColorChooser = new JColorChooser();
+	
 
 	/**
 	 * Launch the application.
@@ -111,7 +114,7 @@ public class DialogCircle extends JDialog {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				
-				 colInner=JColorChooser.showDialog(null, "Pick your color", Color.WHITE);
+				 colInner=JColorChooser.showDialog(null, "Pick your color", getColorChooserInner().getColor());
 				 
 			}
 		});
@@ -120,7 +123,7 @@ public class DialogCircle extends JDialog {
 		btnColEdge.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				colEdge=JColorChooser.showDialog(null, "Pick your color", Color.BLACK);
+				colEdge=JColorChooser.showDialog(null, "Pick your color", getColorChooserEdge().getColor());
 			}
 		});
 		GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
@@ -283,4 +286,20 @@ public class DialogCircle extends JDialog {
 	public void setDiametar(String textField) {
 		this.txtdiametar.setText(textField);
 		}
+	
+	public void setColorChooserInner(JColorChooser chooser)
+	{
+		this.innerColorChooser=chooser;
+	}
+	public JColorChooser getColorChooserInner() {
+		return innerColorChooser;
+	}
+	
+	public void setColorChooserEdge(JColorChooser chooser)
+	{
+		this.edgeColorChooser=chooser;
+	}
+	public JColorChooser getColorChooserEdge() {
+		return edgeColorChooser;
+	}
 }
