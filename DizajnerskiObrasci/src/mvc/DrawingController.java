@@ -16,6 +16,7 @@ import java.io.ObjectInputStream;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.ListIterator;
 import java.util.Stack;
 
 import javax.swing.JFileChooser;
@@ -58,7 +59,7 @@ import strategy.SavePainting;
 public class DrawingController {
 	private DrawingModel model;
     private DrawingFrame frame;
-    private ArrayList<Shape> shapes=new ArrayList<Shape>();
+    private ArrayList<Shape> selectedShapes=new ArrayList<Shape>();
     private ArrayList<Shape> undoShapes = new ArrayList<Shape>();
     private ArrayList<Shape> redoShapes = new ArrayList<Shape>();
 	private Point startPoint;
@@ -93,46 +94,64 @@ public class DrawingController {
     }
     
     
-    protected void thisMouseClicked(MouseEvent e) {
+    @SuppressWarnings("unused")
+	protected void thisMouseClicked(MouseEvent e) {
+    	Shape selected;
+    	Shape shape;
+    	
+    	
 		if(frame.getTglbtnSelect())
 		{
 			
-			testShape=null;
+			
+			selected = null;
+			shape = null;
+			
+			
 			Command command = null;
 			Point p=new Point(e.getX(),e.getY());
-			Iterator<Shape> it=model.getShapes().iterator();
+			ListIterator<Shape> it=model.getShapes().listIterator();
 			while(it.hasNext())
 			{
-				Shape geo=it.next();
-				geo.setSelected(false);
-				if((geo.contains(p)) && geo.isSelected()==false)
+				shape=it.next();
+				//shape.setSelected(false);
+				if((shape.contains(p)))
 				{
-					testShape=geo;
+					selected=shape;
+					
 				}
 				
 			}
+			//System.out.println(selected.isSelected());
 			
-			if(testShape != null) 
+			
+			if(selected != null) 
 			{
-				if(testShape.isSelected())
+				if(selected.isSelected())
 				{
-					command = new CmdDeselectShape(this, testShape);
+					//System.out.println(selected.isSelected());
+					command = new CmdDeselectShape(this, selected);
 					command.execute();
+					
+					
 					frame.getTextArea().append(command.toString());
 					undoStack.push(command);
 				} else {
-					command = new CmdSelectShape(this, testShape);
+					command = new CmdSelectShape(this, selected);
 					command.execute();
 					frame.getTextArea().append(command.toString());
 					undoStack.push(command);
 				}
-				undoCounter++;			}
+				undoCounter++;
+				
+				}
+			undoRedoButtons();
+			redoStack.clear();
+			frame.getView().repaint();
 			
-		}
+		} else {
 		
-		undoRedoButtons();
-		redoStack.clear();
-		frame.repaint();
+		
 		
 		if(frame.getTglbtnPoint()) {
 			Color color = frame.getBtnEdgeColor().getBackground();
@@ -400,26 +419,26 @@ public class DrawingController {
 			}
 			
 		}
-		else if(testShape!=null)
+		else if(selectedShapes.get(0)!=null)
 		{
-			testShape.setSelected(true);
+			selectedShapes.get(0).setSelected(true);
 		}
-		if(shapes!=null) {
+		else if(selectedShapes!=null) {
 			frame.repaint();
 		}
-		
+		}
 		undoRedoButtons();
 		frame.repaint();
 	}
     protected void modify() {
-    	if(getTestShape()!=null)
+    	if(selectedShapes.get(0)!=null)
 		{
-			Shape pomShape=getTestShape();
+			Shape pomShape=selectedShapes.get(0);
 	
 
-		if(getTestShape() instanceof Point)
+		if(selectedShapes.get(0) instanceof Point)
 		{
-			Point oldPoint = (Point) getTestShape();
+			Point oldPoint = (Point) selectedShapes.get(0);
 
 			
 			
@@ -454,9 +473,9 @@ public class DrawingController {
 				JOptionPane.showMessageDialog(new JFrame(), "Incorrect data entry.Check that all fields are filled with numeric values!", "Error!", JOptionPane.WARNING_MESSAGE);
 			}
 		}
-		else if(getTestShape() instanceof Line)
+		else if(selectedShapes.get(0) instanceof Line)
 		{
-			Line oldLine = (Line) getTestShape();
+			Line oldLine = (Line)selectedShapes.get(0);
 			
 			
 			
@@ -498,9 +517,9 @@ public class DrawingController {
 				JOptionPane.showMessageDialog(new JFrame(), "Incorrect data entry.Check that all fields are filled with numeric values!", "Error", JOptionPane.WARNING_MESSAGE);
 			}
 		}
-		else if(getTestShape() instanceof Rectangle)
+		else if(selectedShapes.get(0) instanceof Rectangle)
 		{
-			Rectangle oldRectangle = (Rectangle) getTestShape();
+			Rectangle oldRectangle = (Rectangle) selectedShapes.get(0);
 			
 			
 			DialogRectangle dp=new DialogRectangle();
@@ -545,9 +564,9 @@ public class DrawingController {
 			}
 			
 		}
-		else if(getTestShape() instanceof HexagonAdapter)
+		else if(selectedShapes.get(0) instanceof HexagonAdapter)
 		{
-			HexagonAdapter oldHexagon = (HexagonAdapter) getTestShape();
+			HexagonAdapter oldHexagon = (HexagonAdapter) selectedShapes.get(0);
 			
 			DialogHexagon dh=new DialogHexagon();
 			dh.setTxtCoordX(Integer.toString(((HexagonAdapter)pomShape).getHexagonCenter().getX()));
@@ -591,9 +610,9 @@ public class DrawingController {
 			}
 			
 		}
-		else if(getTestShape() instanceof Donut)
+		else if(selectedShapes.get(0) instanceof Donut)
 		{
-			Donut oldDonut = (Donut) getTestShape();
+			Donut oldDonut = (Donut) selectedShapes.get(0);
 			
 			DialogDonut dk=new DialogDonut();
 			dk.setTxtCoordX(Integer.toString(((Donut)pomShape).getCenter().getX()));
@@ -635,9 +654,9 @@ public class DrawingController {
 				JOptionPane.showMessageDialog(new JFrame(), "Diametars must be greater then null and inner diametar of the circle must be less then diametar of the bigger circle!", "Error", JOptionPane.WARNING_MESSAGE);
 			}
 			
-		}else if(getTestShape() instanceof Circle)
+		}else if(selectedShapes.get(0) instanceof Circle)
 		{
-			Circle oldCircle = (Circle) getTestShape();
+			Circle oldCircle = (Circle) selectedShapes.get(0);
 			
 			DialogCircle dk=new DialogCircle();
 			dk.setTxtCoordX(Integer.toString(((Circle)pomShape).getCenter().getX()));
@@ -690,13 +709,13 @@ public class DrawingController {
     protected void delete() { 
     	Shape shape;
     	
-    	for(int i = shapes.size() - 1; i>=0;i--)
+    	for(int i = selectedShapes.size() - 1; i>=0;i--)
     	{
-    		shape = testShape;
+    		shape = selectedShapes.get(0);
     		command = new CmdRemoveShape(model, shape, model.getShapes().indexOf(shape));
     		command.execute();
     		frame.getTextArea().append(command.toString());
-    		shapes.remove(shape);
+    		selectedShapes.remove(shape);
     		undoShapes.add(shape);
     		undoStack.push(command);
     		
@@ -719,21 +738,21 @@ public class DrawingController {
 
     
     
-    public ArrayList<Shape> getShape() {
-		return shapes;
+    public ArrayList<Shape> getSelectedShapes() {
+		return selectedShapes;
 	}
 
-	public void setShape(ArrayList<Shape> shape) {
-		this.shapes = shape;
-	}
+//	public void setShape(ArrayList<Shape> shape) {
+//		this.selectedShapes = shape;
+//	}
 
-	public Shape getTestShape() {
-		return testShape;
-	}
-
-	public void setTestShape(Shape testshape) {
-		this.testShape = testshape;
-	}
+//	public Shape getTestShape() {
+//		return testShape;
+//	}
+//
+//	public void setTestShape(Shape testshape) {
+//		this.testShape = testshape;
+//	}
 	
 	public void setStartPoint(Point p)
 	{
@@ -1024,7 +1043,29 @@ public class DrawingController {
 					redoStack.clear();
 					frame.getTextArea().append(cmdSelectShape.toString());
 				} 
-			
+			} else if (row.contains("Deselected")) {
+				CmdDeselectShape cmdDeselectShape;
+				
+				if(row.contains("Undo")) {
+					cmdDeselectShape = (CmdDeselectShape) undoStack.peek();
+					cmdDeselectShape.unexecute();
+					undoStack.pop();
+					redoStack.push(cmdDeselectShape);
+					frame.getTextArea().append("Undo " + cmdDeselectShape.toString());
+				} else if (row.contains("Redo")) {
+					cmdDeselectShape = (CmdDeselectShape) redoStack.peek();
+					cmdDeselectShape.execute();
+					redoStack.pop();
+					undoStack.push(cmdDeselectShape);
+					frame.getTextArea().append("Redo " + cmdDeselectShape.toString());
+				} else {
+					shape = selectedShapes.get(selectedShapes.indexOf(shape));
+					cmdDeselectShape = new CmdDeselectShape(this, shape);
+					cmdDeselectShape.execute();
+					undoStack.push(cmdDeselectShape); 
+					redoStack.clear();
+					frame.getTextArea().append(cmdDeselectShape.toString());
+				}
 			}else if (row.contains("Modified")) {
 				if (shape instanceof Point) {
 					CmdModifyPoint cmdModifyPoint;
@@ -1042,7 +1083,7 @@ public class DrawingController {
 						undoStack.push(cmdModifyPoint);
 						frame.getTextArea().append("Redo " + cmdModifyPoint.toString());
 					} else {
-						shape = shapes.get(0);
+						shape = selectedShapes.get(0);
 						
 						//System.out.println(row);
 						Point newPoint = new Point();
@@ -1073,7 +1114,7 @@ public class DrawingController {
 						undoStack.push(cmdModifyLine);
 						frame.getTextArea().append("Redo " + cmdModifyLine.toString());
 					} else {
-						shape = shapes.get(0);
+						shape = selectedShapes.get(0);
 						Point newStartPoint = new Point();
 						Point newEndPoint = new Point();
 						
@@ -1107,7 +1148,7 @@ public class DrawingController {
 						undoStack.push(cmdModifyHexagon);
 						frame.getTextArea().append("Redo " + cmdModifyHexagon.toString());
 					} else {
-						shape = shapes.get(0);
+						shape = selectedShapes.get(0);
 						Point center = new Point();
 						int radius, edgeColor, innerColor;
 						
@@ -1141,7 +1182,7 @@ public class DrawingController {
 						undoStack.push(cmdModifyRectangle);
 						frame.getTextArea().append("Redo " + cmdModifyRectangle.toString());
 					} else {
-						shape = shapes.get(0);
+						shape = selectedShapes.get(0);
 						Point upperLeftPoint = new Point();
 						int width, height, edgeColor, innerColor;
 						
@@ -1178,7 +1219,7 @@ public class DrawingController {
 						undoStack.push(cmdModifyDonut);
 						frame.getTextArea().append("Redo " + cmdModifyDonut.toString());
 					} else {
-						shape = shapes.get(0);
+						shape = selectedShapes.get(0);
 						Point center = new Point();
 						int radius, innerRadius, edgeColor, innerColor;
 						
@@ -1215,7 +1256,7 @@ public class DrawingController {
 						undoStack.push(cmdModifyCircle);
 						frame.getTextArea().append("Redo " + cmdModifyCircle.toString());
 					} else {
-						shape = shapes.get(0);
+						shape = selectedShapes.get(0);
 						Point center = new Point();
 						int radius, edgeColor, innerColor;
 						
@@ -1252,7 +1293,7 @@ public class DrawingController {
 						undoStack.push(cmdModifyPoint);
 						frame.getTextArea().append("Redo " + cmdModifyPoint.toString());
 					} else {
-						shape = shapes.get(0);
+						shape = selectedShapes.get(0);
 						Point newPoint = new Point();
 						
 						newPoint.setX(Integer.parseInt(row.substring(findIndexOf(3, '(', row) + 1, findIndexOf(3, ',', row))));
@@ -1281,7 +1322,7 @@ public class DrawingController {
 						undoStack.push(cmdModifyLine);
 						frame.getTextArea().append("Redo " + cmdModifyLine.toString());
 					} else {
-						shape = shapes.get(0);
+						shape = selectedShapes.get(0);
 						Point newStartPoint = new Point();
 						Point newEndPoint = new Point();
 						
@@ -1315,7 +1356,7 @@ public class DrawingController {
 						undoStack.push(cmdModifyHexagon);
 						frame.getTextArea().append("Redo " + cmdModifyHexagon.toString());
 					} else {
-						shape = shapes.get(0);
+						shape = selectedShapes.get(0);
 						Point center = new Point();
 						int radius, edgeColor, innerColor;
 						
@@ -1349,7 +1390,7 @@ public class DrawingController {
 						undoStack.push(cmdModifyRectangle);
 						frame.getTextArea().append("Redo " + cmdModifyRectangle.toString());
 					} else {
-						shape = shapes.get(0);
+						shape = selectedShapes.get(0);
 						Point upperLeftPoint = new Point();
 						int width, height, edgeColor, innerColor;
 						
@@ -1386,7 +1427,7 @@ public class DrawingController {
 						undoStack.push(cmdModifyDonut);
 						frame.getTextArea().append("Redo " + cmdModifyDonut.toString());
 					} else {
-						shape = shapes.get(0);
+						shape = selectedShapes.get(0);
 						Point center = new Point();
 						int radius, innerRadius, edgeColor, innerColor;
 						
@@ -1423,7 +1464,7 @@ public class DrawingController {
 						undoStack.push(cmdModifyCircle);
 						frame.getTextArea().append("Redo " + cmdModifyCircle.toString());
 					} else {
-						shape = shapes.get(0);
+						shape = selectedShapes.get(0);
 						Point center = new Point();
 						int radius, edgeColor, innerColor;
 						
@@ -1450,7 +1491,7 @@ public class DrawingController {
 					cmdRemoveShape.unexecute();
 					//System.out.println(undoShapes.size() + "size");
 					redoShapes.add(undoShapes.get(undoShapes.size() - 1));
-					shapes.add(undoShapes.get(undoShapes.size() - 1));
+					selectedShapes.add(undoShapes.get(undoShapes.size() - 1));
 					undoShapes.remove(undoShapes.size() - 1);
 					undoStack.pop();
 					redoStack.push(cmdRemoveShape);
@@ -1459,17 +1500,17 @@ public class DrawingController {
 					cmdRemoveShape = (CmdRemoveShape) redoStack.peek();
 					cmdRemoveShape.execute();
 					undoShapes.add(redoShapes.get(redoShapes.size() - 1));
-					shapes.remove(redoShapes.get(redoShapes.size() - 1));
+					selectedShapes.remove(redoShapes.get(redoShapes.size() - 1));
 					redoShapes.remove(redoShapes.size() - 1);
 					redoStack.pop();
 					undoStack.push(cmdRemoveShape);
 					frame.getTextArea().append("Redo " + cmdRemoveShape.toString());
 				} else {
-					shape = shapes.get(0);
+					shape = selectedShapes.get(0);
 					cmdRemoveShape = new CmdRemoveShape(model, shape, model.getShapes().indexOf(shape));
 					cmdRemoveShape.execute();
-					shapes.remove(shape);
-					shapes.add(shape);
+					selectedShapes.remove(shape);
+					selectedShapes.add(shape);
 					undoStack.push(cmdRemoveShape);
 					redoStack.clear();
 					frame.getTextArea().append(cmdRemoveShape.toString());
@@ -1494,7 +1535,7 @@ public class DrawingController {
 						
 						frame.getTextArea().append("Redo " + cmdToBack.toString());
 					} else {
-						shape = shapes.get(0);
+						shape = selectedShapes.get(0);
 						
 						cmdToBack = new CmdToBack(model, shape);
 						cmdToBack.execute(); 
@@ -1523,7 +1564,7 @@ public class DrawingController {
 						
 						frame.getTextArea().append("Redo " + cmdToFront.toString());
 					} else {
-						shape = shapes.get(0);
+						shape = selectedShapes.get(0);
 						cmdToFront = new CmdToFront(model, shape);
 						cmdToFront.execute(); 
 						
@@ -1552,7 +1593,7 @@ public class DrawingController {
 						
 						frame.getTextArea().append("Redo " + cmdBringToBack.toString());
 					} else {
-						shape = shapes.get(0);
+						shape = selectedShapes.get(0);
 						
 						cmdBringToBack = new CmdBringToBack(model, shape);
 						cmdBringToBack.execute();
@@ -1582,7 +1623,7 @@ public class DrawingController {
 						
 						frame.getTextArea().append("Redo " + cmdBringToFront.toString());
 					} else {
-						shape = shapes.get(0);
+						shape = selectedShapes.get(0);
 						
 						cmdBringToFront = new CmdBringToFront(model, shape);
 						cmdBringToFront.execute();
@@ -1640,7 +1681,7 @@ public class DrawingController {
 		if(command instanceof CmdRemoveShape)
 		{
 			redoShapes.add(undoShapes.get(index));
-			shapes.add(undoShapes.get(index));
+			selectedShapes.add(undoShapes.get(index));
 			undoShapes.remove(index);
 		}
 		frame.getTextArea().append("Undo " + undoStack.peek().toString());
@@ -1666,7 +1707,7 @@ public class DrawingController {
 		if(command instanceof CmdRemoveShape)
 		{
 			undoShapes.add(redoShapes.get(index));
-			shapes.add(redoShapes.get(index));
+			selectedShapes.add(redoShapes.get(index));
 			redoShapes.remove(index);
 		}
 		frame.getTextArea().append("Redo " + redoStack.peek().toString());

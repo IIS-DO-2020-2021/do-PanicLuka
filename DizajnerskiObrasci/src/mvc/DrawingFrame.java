@@ -398,8 +398,8 @@ public class DrawingFrame extends JFrame {
 		toolBar.add(btnBringToBack);
 
 		
-		btnInnerColor = new JButton("Inner Color");
-		
+		btnInnerColor = new JButton("");
+		//btnInnerColor.setBounds(95, 30);
 		btnInnerColor.setBackground(Color.WHITE);
 
 		
@@ -434,7 +434,7 @@ public class DrawingFrame extends JFrame {
 		toolBar.add(btnInnerColor);
 		
 		
-		btnEdgeColor = new JButton("Edge Color");
+		btnEdgeColor = new JButton("");
 		
 		btnEdgeColor.setBackground(Color.BLACK);
 		
@@ -458,31 +458,10 @@ public class DrawingFrame extends JFrame {
 		
 		JPanel panelLog = new JPanel();
 		panelLog.setBackground(Color.WHITE);
-		panelLog.setLayout(null);
-		
-		scrollPane = new JScrollPane();
-		
-		GroupLayout gl_PanelLog = new GroupLayout(panelLog);
-		gl_PanelLog.setHorizontalGroup(gl_PanelLog.createParallelGroup(Alignment.LEADING)
-				.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 946, Short.MAX_VALUE));
-		gl_PanelLog.setVerticalGroup(gl_PanelLog.createParallelGroup(Alignment.TRAILING)
-				.addComponent(scrollPane, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 109, Short.MAX_VALUE));
+		//panelLog.setLayout(null);
 		
 		
 		
-		
-		textArea = new JTextArea();
-		textArea.setEditable(false);
-		//scrollPane.setBounds(50, 50, 50, 50);
-		scrollPane.setViewportView(textArea);
-		
-		panelLog.setLayout(gl_PanelLog);
-		
-		
-		
-		
-		
-		view.add(panelLog);
 		
 		
 		
@@ -492,10 +471,10 @@ public class DrawingFrame extends JFrame {
 		
 		
 		
-		view.setSize(new Dimension(20, 40));
-		view.setPreferredSize(new Dimension(200, 400));
+		//view.setSize(new Dimension(20, 40));
+		//view.setPreferredSize(new Dimension(200, 400));
 		
-		contentPane.add(view);
+		//contentPane.add(view);
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
 		gl_contentPane.setHorizontalGroup(
 			gl_contentPane.createParallelGroup(Alignment.LEADING)
@@ -508,6 +487,8 @@ public class DrawingFrame extends JFrame {
 						.addContainerGap()
 						//.addComponent(toolbarVertical, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addContainerGap(800, Short.MAX_VALUE))
+				.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING, false)
+						.addComponent(panelLog, Alignment.LEADING, 0, 0, Short.MAX_VALUE))
 				
 		);
 		gl_contentPane.setVerticalGroup(
@@ -518,17 +499,42 @@ public class DrawingFrame extends JFrame {
 					//.addComponent(toolbarVertical, GroupLayout.PREFERRED_SIZE, 50, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(view, GroupLayout.DEFAULT_SIZE, 408, Short.MAX_VALUE))
+				.addComponent(panelLog, GroupLayout.PREFERRED_SIZE, 109, GroupLayout.PREFERRED_SIZE)
 		);
 		
 	
 		
+		scrollPane = new JScrollPane();
 		
+		GroupLayout gl_PanelLog = new GroupLayout(panelLog);
+		gl_PanelLog.setHorizontalGroup(gl_PanelLog.createParallelGroup(Alignment.LEADING)
+				.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 946, Short.MAX_VALUE));
+		gl_PanelLog.setVerticalGroup(gl_PanelLog.createParallelGroup(Alignment.TRAILING)
+				.addComponent(scrollPane, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 109, Short.MAX_VALUE));
+	
+		
+		
+		
+		textArea = new JTextArea();
+		textArea.setEditable(false);
+		//scrollPane.setBounds(50, 50, 50, 50);
+		scrollPane.setViewportView(textArea);
+		
+		panelLog.setLayout(gl_PanelLog);
+		panelLog.setBounds(120, 110, 100, 120);
+		
+		
+		
+		
+		view.add(panelLog);
 		
 		
 		contentPane.setLayout(gl_contentPane);
 		
 		
+		view.setPreferredSize(new Dimension(200, 400));
 		
+		contentPane.add(view);
 	
 		
 	}
