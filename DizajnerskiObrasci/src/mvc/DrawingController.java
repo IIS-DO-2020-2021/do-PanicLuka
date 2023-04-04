@@ -52,6 +52,8 @@ import geometry.Line;
 import geometry.Point;
 import geometry.Rectangle;
 import geometry.Shape;
+import observer.BtnObserver;
+import observer.UpdateBtnObserver;
 import strategy.SaveLog;
 import strategy.SaveManager;
 import strategy.SavePainting;
@@ -79,11 +81,17 @@ public class DrawingController {
 
 	private ArrayList<String> logList = new ArrayList<String>();
 	
+	private UpdateBtnObserver btnUpdateObserver;
+	
+	private BtnObserver btnObserver = new BtnObserver();
+
 
     public DrawingController(DrawingModel model, DrawingFrame frame) {
     	
         this.model = model;
         this.frame = frame;
+        btnUpdateObserver = new UpdateBtnObserver(frame);
+		btnObserver.addPropertyChangeListener(btnUpdateObserver);
         frame.addMouseListener(new MouseAdapter(){
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -114,7 +122,6 @@ public class DrawingController {
 			while(it.hasNext())
 			{
 				shape=it.next();
-				//shape.setSelected(false);
 				if((shape.contains(p)))
 				{
 					selected=shape;
@@ -122,14 +129,12 @@ public class DrawingController {
 				}
 				
 			}
-			//System.out.println(selected.isSelected());
 			
 			
 			if(selected != null) 
 			{
 				if(selected.isSelected())
 				{
-					//System.out.println(selected.isSelected());
 					command = new CmdDeselectShape(this, selected);
 					command.execute();
 					
@@ -146,6 +151,7 @@ public class DrawingController {
 				
 				}
 			undoRedoButtons();
+			enableDisableButtons();
 			redoStack.clear();
 			frame.getView().repaint();
 			
@@ -168,26 +174,9 @@ public class DrawingController {
 			Point p=new Point(e.getX(),e.getY());
 			
 			
-				//p.setCol(dp.getColor());
-				
-		
-			
-			
-			
 			p.setCol(dp.getColor());
 			
-			//dp.setColor(color);
-			//p.setCol(color);
-			
 		
-			
- 			
-			
-			
-			
-			
-			
-			
 			
 			command = new CmdAddShape(model, p);
 			command.execute();
@@ -222,7 +211,6 @@ public class DrawingController {
 			command = new CmdAddShape(model, l);
 			command.execute();
 			frame.getTextArea().append(command.toString());
-			//l.setCol(dl.getCol());
 			undoCounter++;
 			undoStack.push(command);
 			redoStack.clear();
@@ -428,6 +416,7 @@ public class DrawingController {
 		}
 		}
 		undoRedoButtons();
+		enableDisableButtons();
 		frame.repaint();
 	}
     protected void modify() {
@@ -704,6 +693,9 @@ public class DrawingController {
 			setStartPoint(null);
 			JOptionPane.showMessageDialog(new JFrame(), "No shape selected!", "Error!", JOptionPane.WARNING_MESSAGE);
 		}
+    	
+		enableDisableButtons();
+		//frame.getView().repaint();
 	}
     
     protected void delete() { 
@@ -730,29 +722,18 @@ public class DrawingController {
         	undoRedoButtons();
         	frame.repaint();
 		}
-    	
+		enableDisableButtons();
+
     	
     
 
 	}
-
-    
+  
     
     public ArrayList<Shape> getSelectedShapes() {
 		return selectedShapes;
 	}
 
-//	public void setShape(ArrayList<Shape> shape) {
-//		this.selectedShapes = shape;
-//	}
-
-//	public Shape getTestShape() {
-//		return testShape;
-//	}
-//
-//	public void setTestShape(Shape testshape) {
-//		this.testShape = testshape;
-//	}
 	
 	public void setStartPoint(Point p)
 	{
@@ -1029,7 +1010,6 @@ public class DrawingController {
 					undoStack.push(cmdSelectShape);
 					frame.getTextArea().append("Redo " + cmdSelectShape.toString());
 				} else {
-					//System.out.println(model.getShapes().indexOf(shape));
 					if(row.contains("Hexagon")) {
 						shape = model.getShapes().get(model.getShapes().indexOf(shape));
 					}else {
@@ -1085,7 +1065,6 @@ public class DrawingController {
 					} else {
 						shape = selectedShapes.get(0);
 						
-						//System.out.println(row);
 						Point newPoint = new Point();
 						
 						newPoint.setX(Integer.parseInt(row.substring(findIndexOf(3, '(', row) + 1, findIndexOf(2, ',', row))));
@@ -1489,7 +1468,6 @@ public class DrawingController {
 				if(row.contains("Undo")) {
 					cmdRemoveShape = (CmdRemoveShape) undoStack.peek();
 					cmdRemoveShape.unexecute();
-					//System.out.println(undoShapes.size() + "size");
 					redoShapes.add(undoShapes.get(undoShapes.size() - 1));
 					selectedShapes.add(undoShapes.get(undoShapes.size() - 1));
 					undoShapes.remove(undoShapes.size() - 1);
@@ -1652,6 +1630,8 @@ public class DrawingController {
 			frame.getTglBtnRectangle().setEnabled(true);
 			frame.getTglBtnHexagon().setEnabled(true);
 			frame.getBtnUndo().setEnabled(false);
+			enableDisableButtons();
+
 		}
 	}
 	
@@ -1696,6 +1676,8 @@ public class DrawingController {
 		redoStack.push(command);
 		
 		undoRedoButtons();
+		enableDisableButtons();
+
 		
 	}
 
@@ -1720,6 +1702,8 @@ public class DrawingController {
 		undoStack.push(command);
 		
 		undoRedoButtons();
+		enableDisableButtons();
+
 		
 	}
 	
@@ -1732,6 +1716,8 @@ public class DrawingController {
 		undoCounter++;
 		redoStack.clear();
 		undoRedoButtons();
+		enableDisableButtons();
+
 
 		frame.getView().repaint();
 		//frame.repaint();
@@ -1748,6 +1734,8 @@ public class DrawingController {
 		undoCounter++;
 		redoStack.clear();
 		undoRedoButtons();
+		enableDisableButtons();
+
 		frame.getView().repaint();
 		//frame.repaint();
 	}
@@ -1764,6 +1752,8 @@ public class DrawingController {
 		redoStack.clear();
 		
 		undoRedoButtons();
+		enableDisableButtons();
+
 		
 		frame.getView().repaint();
 		//frame.repaint();
@@ -1781,83 +1771,42 @@ public class DrawingController {
 		undoCounter++;
 		redoStack.clear();
 		undoRedoButtons();
+		enableDisableButtons();
+
 		frame.getView().repaint();
 		//frame.repaint();
 	}
 	
-//	protected void modifyInnerColor(Color innerCol)
-//	{
-//		if(getTestShape()!=null)
-//		{
-//			Shape pomShape=getTestShape();
-//	
-//
-//		if(getTestShape() instanceof Point)
-//		{
-//			Point oldPoint = (Point) getTestShape();
-//
-//			
-//			try {
-//			Point newPoint = new Point(oldPoint.getX(), oldPoint.getY(), true, innerCol);
-//			
-//			command = new CmdModifyPoint(oldPoint, newPoint);
-//			command.execute();
-//			frame.getTextArea().append(command.toString());
-//			
-//			
-//			undoStack.push(command);
-//			undoCounter++;
-//			redoStack.clear();
-//			
-//		
-//			
-//			}
-//			
-//			
-//			catch(Exception e)
-//			{
-//				//System.out.println(e.getMessage().toString());
-//				JOptionPane.showMessageDialog(new JFrame(), "Incorrect data entry.Check that all fields are filled with numeric values!", "Error!", JOptionPane.WARNING_MESSAGE);
-//			}
-//		} else if(getTestShape() instanceof Line)
-//		{
-//			Line oldLine = (Line) getTestShape();
-//			
-//			
-//			
-//			
-//			try
-//			{
-//			
-//				Line newLine = new Line(
-//						new Point(oldLine.getStartPoint().getX(), oldLine.getStartPoint().getY(),
-//								 true),
-//						new Point(oldLine.getEndPoint().getX(), oldLine.getEndPoint().getY(),
-//								 true),
-//							true,
-//						innerCol
-//						
-//						);
-//				
-//				
-//				command = new CmdModifyLine(oldLine, newLine);
-//				command.execute();
-//				
-//				frame.getTextArea().append(command.toString());
-//				undoStack.push(command);
-//				undoCounter++;
-//				redoStack.clear();
-//			
-//			}
-//			
-//			catch(Exception ex)
-//			{
-//				JOptionPane.showMessageDialog(new JFrame(), "Incorrect data entry.Check that all fields are filled with numeric values!", "Error", JOptionPane.WARNING_MESSAGE);
-//			}
-//		}
-//		}
-//	}
-//	
+
+	
+	public void enableDisableButtons() {
+
+		if (model.getShapes().size() != 0) {
+			btnObserver.setSelectBtnActivated(true);
+			if (selectedShapes.size() != 0) {
+				if (selectedShapes.size() == 1)// 1
+				{
+					btnObserver.setModifyBtnActivated(true);
+
+				} else {
+					btnObserver.setModifyBtnActivated(false);
+		}
+				btnObserver.setBtnDeleteActivated(true);
+			} else {
+				btnObserver.setModifyBtnActivated(false);
+				btnObserver.setBtnDeleteActivated(false);
+
+			}
+		} else {
+			btnObserver.setSelectBtnActivated(false);
+			btnObserver.setModifyBtnActivated(false);
+			btnObserver.setBtnDeleteActivated(false);
+
+		}
+
+	}
+	
+
 	
 	public int findIndexOf(int n, char c, String s) {
         int occurr = 0;

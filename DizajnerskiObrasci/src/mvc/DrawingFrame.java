@@ -46,9 +46,13 @@ public class DrawingFrame extends JFrame {
 	private DrawingView view = new DrawingView();
 	private DrawingController controller;
 	
-	private Color innerColor = new Color(0, 0, 0);
-	private Color edgeColor = new Color(255, 255, 255);
+	private Color innerColor = Color.WHITE;
+	private Color edgeColor = Color.BLACK;
 	
+	private JPanel upperPanel;
+	private JPanel lowerPanel;
+	private JPanel pnlLog;
+	private JPanel pnlMiddle;
 	
 	private JPanel contentPane;
 	JToggleButton tglbtnHexagon;
@@ -75,6 +79,7 @@ public class DrawingFrame extends JFrame {
 	JButton btnEdgeColor;
 
 	
+	private ButtonGroup group;
 	
 	private JScrollPane scrollPane;
 	private JTextArea textArea;
@@ -99,19 +104,34 @@ public class DrawingFrame extends JFrame {
 		setBounds(100, 100, 837, 534);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
-		ButtonGroup group=new ButtonGroup();
-		//ButtonGroup groupVertical=new ButtonGroup();
-
+		
+		
+		
+		
+		upperPanel = new JPanel();
+		contentPane.add(upperPanel, BorderLayout.NORTH);
+		pnlMiddle = new JPanel();
+		contentPane.add(pnlMiddle, BorderLayout.SOUTH);
+		lowerPanel = new JPanel();
+		pnlMiddle.add(lowerPanel, BorderLayout.NORTH);
+		pnlLog = new JPanel();
+		pnlLog.setBackground(Color.WHITE);
+		pnlMiddle.add(pnlLog, BorderLayout.SOUTH);
 		
 
-		JToolBar toolBar = new JToolBar();
-		 //JToolBar toolbarVertical = new JToolBar(null, JToolBar.VERTICAL);
+		
+		group = new ButtonGroup();
+		
+		
 		
 
 		
 		
-		tglbtnHexagon = new JToggleButton("Hexagon");
+		tglbtnHexagon = new JToggleButton();
+		tglbtnHexagon.setToolTipText("Hexagon");
+		tglbtnHexagon.setIcon(new ImageIcon(DrawingFrame.class.getResource("/logos/hexagon.png")));
 		tglbtnHexagon.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
@@ -120,10 +140,12 @@ public class DrawingFrame extends JFrame {
 		});
 		tglbtnHexagon.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		
-		toolBar.add(tglbtnHexagon);
+		upperPanel.add(tglbtnHexagon);
 		group.add(tglbtnHexagon);
 		
-		tglbtnPoint = new JToggleButton("Point");
+		tglbtnPoint = new JToggleButton();
+		tglbtnPoint.setToolTipText("Point");
+		tglbtnPoint.setIcon(new ImageIcon(DrawingFrame.class.getResource("/logos/point.png")));
 		tglbtnPoint.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
@@ -132,10 +154,12 @@ public class DrawingFrame extends JFrame {
 		});
 		tglbtnPoint.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		
-		toolBar.add(tglbtnPoint);
+		upperPanel.add(tglbtnPoint);
 		group.add(tglbtnPoint);
 		
-	    tglbtnLine = new JToggleButton("Line");
+	    tglbtnLine = new JToggleButton();
+	    tglbtnLine.setToolTipText("Line");
+	    tglbtnLine.setIcon(new ImageIcon(DrawingFrame.class.getResource("/logos/line.png")));
 	    tglbtnLine.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
@@ -143,10 +167,12 @@ public class DrawingFrame extends JFrame {
 			}
 		});
 		tglbtnLine.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		toolBar.add(tglbtnLine);
+		upperPanel.add(tglbtnLine);
 		group.add(tglbtnLine);
 		
-		tglbtnRectangle = new JToggleButton("Rectangle");
+		tglbtnRectangle = new JToggleButton();
+		tglbtnRectangle.setToolTipText("Rectangle");
+		tglbtnRectangle.setIcon(new ImageIcon(DrawingFrame.class.getResource("/logos/rectangle.png")));
 		tglbtnRectangle.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -154,10 +180,12 @@ public class DrawingFrame extends JFrame {
 			}
 		});
 		tglbtnRectangle.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		toolBar.add(tglbtnRectangle);
+		upperPanel.add(tglbtnRectangle);
 		group.add(tglbtnRectangle);
 		
-		tglbtnCircle = new JToggleButton("Circle");
+		tglbtnCircle = new JToggleButton();
+		tglbtnCircle.setToolTipText("Circle");
+		tglbtnCircle.setIcon(new ImageIcon(DrawingFrame.class.getResource("/logos/circle.png")));
 		tglbtnCircle.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -165,10 +193,15 @@ public class DrawingFrame extends JFrame {
 			}
 		});
 		tglbtnCircle.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		toolBar.add(tglbtnCircle);
+		upperPanel.add(tglbtnCircle);
 		group.add(tglbtnCircle);
 		
-		tglbtnCirclewithHole = new JToggleButton("Donut");
+		tglbtnCirclewithHole = new JToggleButton();
+		//tglbtnCirclewithHole.setBackground(Color.WHITE);
+		tglbtnCirclewithHole.setToolTipText("Donut");
+
+		
+		tglbtnCirclewithHole.setIcon(new ImageIcon(DrawingFrame.class.getResource("/logos/donut.png")));
 		tglbtnCirclewithHole.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -176,21 +209,31 @@ public class DrawingFrame extends JFrame {
 			}
 		});
 		tglbtnCirclewithHole.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		upperPanel.add(tglbtnCirclewithHole);
 		group.add(tglbtnCirclewithHole);
-		toolBar.add(tglbtnCirclewithHole);
 		
-		tglbtnSelect = new JToggleButton("Select");
+		tglbtnSelect = new JToggleButton();
+		tglbtnSelect.setToolTipText("Select");
+		tglbtnSelect.setIcon(new ImageIcon(DrawingFrame.class.getResource("/logos/select.png")));
+
+
 		tglbtnSelect.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				controller.setStartPoint(null);
 			}
 		});
+		upperPanel.add(tglbtnSelect);
 		group.add(tglbtnSelect);
 		tglbtnSelect.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		toolBar.add(tglbtnSelect);
 		
-		tglbtnModify = new JToggleButton("Modify");
+		this.getContentPane().add(view, BorderLayout.CENTER);
+		
+		tglbtnModify = new JToggleButton();
+		tglbtnModify.setToolTipText("Modify");
+		tglbtnModify.setIcon(new ImageIcon(DrawingFrame.class.getResource("/logos/modify.png")));
+
+
 		tglbtnModify.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 controller.modify();
@@ -199,23 +242,31 @@ public class DrawingFrame extends JFrame {
                 
             }
         });
-			
+		lowerPanel.add(tglbtnModify);
 		group.add(tglbtnModify);
 		tglbtnModify.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		toolBar.add(tglbtnModify);
-		tglbtnDelete = new JToggleButton("Delete");
+		
+		
+		tglbtnDelete = new JToggleButton();
+		tglbtnDelete.setToolTipText("Delete");
+		tglbtnDelete.setIcon(new ImageIcon(DrawingFrame.class.getResource("/logos/delete.png")));
+
+
 		tglbtnDelete.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				controller.delete();
 				repaint();
 			}
 		});
-		
+		lowerPanel.add(tglbtnDelete);
 		group.add(tglbtnDelete);
 		tglbtnDelete.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		toolBar.add(tglbtnDelete);
 		
-		tglbtnUndo = new JToggleButton("Undo");
+		
+		tglbtnUndo = new JToggleButton();
+		tglbtnUndo.setToolTipText("Undo");
+
+		tglbtnUndo.setIcon(new ImageIcon(DrawingFrame.class.getResource("/logos/undo.png")));
 	
 
 		tglbtnUndo.addMouseListener(new MouseAdapter() {
@@ -224,26 +275,33 @@ public class DrawingFrame extends JFrame {
 				controller.undo();
 			}
 		});
+		lowerPanel.add(tglbtnUndo);
 		group.add(tglbtnUndo);
 		tglbtnUndo.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		toolBar.add(tglbtnUndo);
 		
-		tglbtnRedo = new JToggleButton("Redo");
-	
+		
+		tglbtnRedo = new JToggleButton();
+		tglbtnRedo.setToolTipText("Redo");
 
+	
+		tglbtnRedo.setIcon(new ImageIcon(DrawingFrame.class.getResource("/logos/redo.png")));
 		tglbtnRedo.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				controller.redo();
 			}
 		});
+		lowerPanel.add(tglbtnRedo);
 		group.add(tglbtnRedo);
 		tglbtnRedo.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		toolBar.add(tglbtnRedo);
 		
 		
-		btnSavePainting = new JButton("Save Painting");
 		
+		btnSavePainting = new JButton();
+		btnSavePainting.setToolTipText("Save Painting");
+
+		
+		btnSavePainting.setIcon(new ImageIcon(DrawingFrame.class.getResource("/logos/savePainting.png")));
 
 		btnSavePainting.addMouseListener(new MouseAdapter() {
 			@Override
@@ -257,13 +315,16 @@ public class DrawingFrame extends JFrame {
 				}
 			}
 		});
+		lowerPanel.add(btnSavePainting);
 		group.add(btnSavePainting);
 		btnSavePainting.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		toolBar.add(btnSavePainting);
 		
 		
-		btnSaveLog = new JButton("Save Log");
-	
+		
+		btnSaveLog = new JButton();
+		btnSaveLog.setToolTipText("Save Log");
+
+		btnSaveLog.setIcon(new ImageIcon(DrawingFrame.class.getResource("/logos/saveLog.png")));
 
 		btnSaveLog.addMouseListener(new MouseAdapter() {
 			@Override
@@ -271,14 +332,16 @@ public class DrawingFrame extends JFrame {
 				controller.saveLog();
 			}
 		});
+		lowerPanel.add(btnSaveLog);
 		group.add(btnSaveLog);
 		btnSaveLog.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		toolBar.add(btnSaveLog);
 		
 		
-		btnLoadNext = new JButton("Load Next");
 		
-
+		btnLoadNext = new JButton();
+		btnLoadNext.setToolTipText("Load Next");
+		
+		btnLoadNext.setIcon(new ImageIcon(DrawingFrame.class.getResource("/logos/loadNext.png")));
 		btnLoadNext.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -289,14 +352,17 @@ public class DrawingFrame extends JFrame {
 				}
 			}
 		});
+		lowerPanel.add(btnLoadNext);
 		group.add(btnLoadNext);
 		btnLoadNext.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		toolBar.add(btnLoadNext);
 		
 		
-		btnOpenLog = new JButton("Open Log");
 		
+		btnOpenLog = new JButton();
+		btnOpenLog.setToolTipText("Open Log");
 
+		
+		btnOpenLog.setIcon(new ImageIcon(DrawingFrame.class.getResource("/logos/openLog.png")));
 		btnOpenLog.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -308,37 +374,40 @@ public class DrawingFrame extends JFrame {
 				}
 			}
 		});
+		lowerPanel.add(btnOpenLog);
 		group.add(btnOpenLog);
 		btnOpenLog.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		toolBar.add(btnOpenLog);
 		
 		
-		btnOpenPainting = new JButton("Open Painting");
 		
+		btnOpenPainting = new JButton();
+		btnOpenPainting.setToolTipText("Open Painting");
 
+		
+		btnOpenPainting.setIcon(new ImageIcon(DrawingFrame.class.getResource("/logos/openPainting.png")));
 		btnOpenPainting.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				try {
 					controller.openPainting();
 				} catch (ClassNotFoundException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				} catch (IOException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 			}
 		});
+		lowerPanel.add(btnOpenPainting);
 		group.add(btnOpenPainting);
 		btnOpenPainting.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		toolBar.add(btnOpenPainting);
 		
-		// to front
-
-		btnToFront = new JButton("To Front");
 		
 
+		btnToFront = new JButton();
+		btnToFront.setToolTipText("To Front");
+
+		
+		btnToFront.setIcon(new ImageIcon(DrawingFrame.class.getResource("/logos/toFront.png")));
 		btnToFront.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -347,13 +416,16 @@ public class DrawingFrame extends JFrame {
 				
 			}
 		});
+		lowerPanel.add(btnToFront);
 		group.add(btnToFront);
 		btnToFront.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		toolBar.add(btnToFront);
 		
 		
-		btnToBack = new JButton("To Back");
 		
+		btnToBack = new JButton();
+		btnToBack.setToolTipText("To Back");
+
+		btnToBack.setIcon(new ImageIcon(DrawingFrame.class.getResource("/logos/toBack.png")));
 
 		btnToBack.addMouseListener(new MouseAdapter() {
 			@Override
@@ -363,13 +435,16 @@ public class DrawingFrame extends JFrame {
 				
 			}
 		});
+		lowerPanel.add(btnToBack);
 		group.add(btnToBack);
 		btnToBack.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		toolBar.add(btnToBack);
 		
-		btnBringToFront = new JButton("Bring To Front");
 		
+		btnBringToFront = new JButton();
+		btnBringToFront.setToolTipText("Bring To Front");
 
+		
+		btnBringToFront.setIcon(new ImageIcon(DrawingFrame.class.getResource("/logos/bringToFront.png")));
 		btnBringToFront.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -378,12 +453,15 @@ public class DrawingFrame extends JFrame {
 				
 			}
 		});
+		lowerPanel.add(btnBringToFront);
 		group.add(btnBringToFront);
 		btnBringToFront.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		toolBar.add(btnBringToFront);
 		
-		btnBringToBack = new JButton("Bring To Back");
 		
+		btnBringToBack = new JButton();
+		btnBringToBack.setToolTipText("Bring To Back");
+
+		btnBringToBack.setIcon(new ImageIcon(DrawingFrame.class.getResource("/logos/sendToBack.png")));
 
 		btnBringToBack.addMouseListener(new MouseAdapter() {
 			@Override
@@ -393,28 +471,20 @@ public class DrawingFrame extends JFrame {
 				
 			}
 		});
+		lowerPanel.add(btnBringToBack);
 		group.add(btnBringToBack);
 		btnBringToBack.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		toolBar.add(btnBringToBack);
-
 		
-		btnInnerColor = new JButton("");
-		//btnInnerColor.setBounds(95, 30);
+		
+		
+		
+		btnInnerColor = new JButton("   ");
+		btnInnerColor.setToolTipText("Inner Color");
 		btnInnerColor.setBackground(Color.WHITE);
 
 		
 
-//		btnInnerColor.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent e) {
-//				Color temp = JColorChooser.showDialog(null, "Choose Color", innerColor);
-//				if (temp != null) {
-//					innerColor = temp;
-//					btnInnerColor.setBackground(innerColor);
-//					controller.modifyInnerColor(temp);
-//				}
-//			}
-//		});
-		
+
 		btnInnerColor.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -423,19 +493,19 @@ public class DrawingFrame extends JFrame {
 				if (temp != null) {
 					innerColor = temp;
 					btnInnerColor.setBackground(innerColor);
-					//controller.modifyInnerColor(temp);
-					//repaint();
+					
 				}
 				
 			}
 		});
+		upperPanel.add(btnInnerColor);
 		group.add(btnInnerColor);
 		btnInnerColor.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		toolBar.add(btnInnerColor);
 		
 		
-		btnEdgeColor = new JButton("");
 		
+		btnEdgeColor = new JButton("   ");
+		btnEdgeColor.setToolTipText("Edge Color");
 		btnEdgeColor.setBackground(Color.BLACK);
 		
 
@@ -449,92 +519,30 @@ public class DrawingFrame extends JFrame {
 				}
 			}
 		});
+		upperPanel.add(btnEdgeColor);
 		group.add(btnEdgeColor);
 		btnEdgeColor.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		toolBar.add(btnEdgeColor);
 		
-		
-		
-		
-		JPanel panelLog = new JPanel();
-		panelLog.setBackground(Color.WHITE);
-		//panelLog.setLayout(null);
-		
-		
-		
-		
-		
-		
-		
-		
-		//panelLog.setLocation(500, 250);
-		
-		
-		
-		//view.setSize(new Dimension(20, 40));
-		//view.setPreferredSize(new Dimension(200, 400));
-		
-		//contentPane.add(view);
-		GroupLayout gl_contentPane = new GroupLayout(contentPane);
-		gl_contentPane.setHorizontalGroup(
-			gl_contentPane.createParallelGroup(Alignment.LEADING)
-				.addComponent(view, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 805, Short.MAX_VALUE)
-				.addGroup(gl_contentPane.createSequentialGroup()
-					.addContainerGap()
-					.addComponent(toolBar, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap(129, Short.MAX_VALUE))
-				.addGroup(gl_contentPane.createSequentialGroup()
-						.addContainerGap()
-						//.addComponent(toolbarVertical, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addContainerGap(800, Short.MAX_VALUE))
-				.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING, false)
-						.addComponent(panelLog, Alignment.LEADING, 0, 0, Short.MAX_VALUE))
-				
-		);
-		gl_contentPane.setVerticalGroup(
-			gl_contentPane.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_contentPane.createSequentialGroup()
-					.addContainerGap()
-					.addComponent(toolBar, GroupLayout.PREFERRED_SIZE, 46, GroupLayout.PREFERRED_SIZE)
-					//.addComponent(toolbarVertical, GroupLayout.PREFERRED_SIZE, 50, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(view, GroupLayout.DEFAULT_SIZE, 408, Short.MAX_VALUE))
-				.addComponent(panelLog, GroupLayout.PREFERRED_SIZE, 109, GroupLayout.PREFERRED_SIZE)
-		);
-		
-	
 		
 		scrollPane = new JScrollPane();
 		
-		GroupLayout gl_PanelLog = new GroupLayout(panelLog);
+		GroupLayout gl_PanelLog = new GroupLayout(pnlLog);
 		gl_PanelLog.setHorizontalGroup(gl_PanelLog.createParallelGroup(Alignment.LEADING)
-				.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 946, Short.MAX_VALUE));
+				.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 600, Short.MAX_VALUE));
 		gl_PanelLog.setVerticalGroup(gl_PanelLog.createParallelGroup(Alignment.TRAILING)
-				.addComponent(scrollPane, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 109, Short.MAX_VALUE));
-	
+				.addComponent(scrollPane, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE));
+				
 		
 		
 		
 		textArea = new JTextArea();
 		textArea.setEditable(false);
-		//scrollPane.setBounds(50, 50, 50, 50);
 		scrollPane.setViewportView(textArea);
-		
-		panelLog.setLayout(gl_PanelLog);
-		panelLog.setBounds(120, 110, 100, 120);
+		pnlLog.setLayout(gl_PanelLog);
 		
 		
 		
 		
-		view.add(panelLog);
-		
-		
-		contentPane.setLayout(gl_contentPane);
-		
-		
-		view.setPreferredSize(new Dimension(200, 400));
-		
-		contentPane.add(view);
 	
 		
 	}
@@ -681,6 +689,41 @@ public class DrawingFrame extends JFrame {
 	public void setBtnEdgeColor(JButton btnEdgeColor) {
 		this.btnEdgeColor = btnEdgeColor;
 	}
+	
+	public JToggleButton getBtnSelect() {
+		return tglbtnSelect;
+	}
+	
+	public JToggleButton getBtnModify() {
+		return tglbtnModify;
+	}
+	
+	public JToggleButton getBtnDelete() {
+		return tglbtnDelete;
+	}
+	public JButton getBtnBringToFront() {
+		return btnBringToFront;
+	}
+	
+	public JButton getBtnBringToBack() {
+		return btnBringToBack;
+	}
+	
+	public JButton getBtnToFront() {
+		return btnToFront;
+	}
+	
+	public JButton getBtnToBack() {
+		return btnToBack;
+	}
+	
+
+	
+
+	
+	
+	
+	
 	
 	
 }
