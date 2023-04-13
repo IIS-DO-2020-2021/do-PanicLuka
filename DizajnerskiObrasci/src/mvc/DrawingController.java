@@ -714,6 +714,7 @@ public class DrawingController {
     		
     		undoCounter++;
     		
+    		
     	}
     	
     	if(JOptionPane.showConfirmDialog(new JFrame(), "Are you sure you want to delete selected shape?","Check",JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION)
@@ -1489,6 +1490,7 @@ public class DrawingController {
 					cmdRemoveShape.execute();
 					selectedShapes.remove(shape);
 					selectedShapes.add(shape);
+					undoShapes.add(shape);
 					undoStack.push(cmdRemoveShape);
 					redoStack.clear();
 					frame.getTextArea().append(cmdRemoveShape.toString());

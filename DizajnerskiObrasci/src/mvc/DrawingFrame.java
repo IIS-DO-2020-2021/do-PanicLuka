@@ -527,10 +527,10 @@ public class DrawingFrame extends JFrame {
 		scrollPane = new JScrollPane();
 		
 		GroupLayout gl_PanelLog = new GroupLayout(pnlLog);
-		gl_PanelLog.setHorizontalGroup(gl_PanelLog.createParallelGroup(Alignment.LEADING)
+		gl_PanelLog.setHorizontalGroup(gl_PanelLog.createParallelGroup()
 				.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 600, Short.MAX_VALUE));
-		gl_PanelLog.setVerticalGroup(gl_PanelLog.createParallelGroup(Alignment.TRAILING)
-				.addComponent(scrollPane, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE));
+		gl_PanelLog.setVerticalGroup(gl_PanelLog.createParallelGroup()
+				.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE));
 				
 		
 		
